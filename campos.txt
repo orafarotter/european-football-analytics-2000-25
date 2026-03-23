@@ -1,0 +1,27 @@
+#### Campos que serão utilizados
+
+| Campo         | Tipo      |
+|---------------|-----------|
+| Division      | STRING    |
+| MatchDate     | DATE      |
+| MatchTime     | STRING    |
+| HomeTeam      | STRING    |
+| AwayTeam      | STRING    |
+| FTHome        | INTEGER   |
+| FTAway        | INTEGER   |
+| FTResult      | STRING    |
+| HTHome        | INTEGER   |
+| HTAway        | INTEGER   |
+| HTResult      | STRING    |
+| HomeShots     | INTEGER   |
+| AwayShots     | INTEGER   |
+| HomeTarget    | INTEGER   |
+| AwayTarget    | INTEGER   |
+| HomeFouls     | INTEGER   |
+| AwayFouls     | INTEGER   |
+| HomeCorners   | INTEGER   |
+| AwayCorners   | INTEGER   |
+| HomeYellow    | INTEGER   |
+| AwayYellow    | INTEGER   |
+| HomeRed       | INTEGER   |
+| AwayRed       | INTEGER   |
