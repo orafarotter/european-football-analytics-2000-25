@@ -1,4 +1,13 @@
-1. Ter uma conta no Google Cloud, uma billing accout e um projeto
+1. Ter uma conta no Google Cloud, uma billing account e um projeto
 
 PROJECT_ID: euro-football-analytics-20-25
 Number: 532542106535
+
+2. Dentro do GCP, ative os seguintes recursos:
+
+gcloud services enable \
+  cloudresourcemanager.googleapis.com \
+  storage.googleapis.com \
+  bigquery.googleapis.com \
+
+Segura a ativação do composer.googleapis.com
