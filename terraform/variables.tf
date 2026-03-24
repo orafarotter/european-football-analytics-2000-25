@@ -1,7 +1,3 @@
-# ============================================================
-# variables.tf — Input variables for the European Football pipeline
-# ============================================================
-
 variable "project_id" {
   description = "GCP project ID where all resources will be created"
   type        = string

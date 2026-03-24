@@ -1,0 +1,6 @@
+project_id             = "<GCP_PROJECT_ID>"
+region                 = "<REGION>"
+zone                   = "<ZONE>"
+bucket_name            = "<BUCKET_NAME>"
+service_account_name   = "<SERVICE_ACCOUNT>"
+composer_env_name      = "<COMPOSER_ENVIRONMENT>"
