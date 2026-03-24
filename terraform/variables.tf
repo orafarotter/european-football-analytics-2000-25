@@ -9,12 +9,6 @@ variable "region" {
   default     = "us-east1"
 }
 
-variable "zone" {
-  description = "GCP zone (used by Composer)"
-  type        = string
-  default     = "us-east1-b"
-}
-
 variable "bucket_name" {
   description = "GCS bucket used as data lake"
   type        = string
