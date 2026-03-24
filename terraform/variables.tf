@@ -1,5 +1,5 @@
 variable "project_id" {
-  description = "GCP project ID where all resources will be created"
+  description = "GCP project ID"
   type        = string
 }
 
@@ -28,19 +28,19 @@ variable "service_account_name" {
 }
 
 variable "composer_env_name" {
-  description = "Cloud Composer (Airflow) environment"
+  description = "Cloud Composer environment"
   type        = string
   default     = "eu-football-composer-env"
 }
 
 variable "composer_image_version" {
-  description = "Composer image version (Airflow 2.x on Composer 2)"
+  description = "Composer image version"
   type        = string
-  default     = "composer-2.6.6-airflow-2.7.3"
+  default     = "airflow-2.10.5-build.27"
 }
 
 variable "bq_datasets" {
-  description = "List of BigQuery dataset IDs to create (medallion layers)"
+  description = "List of BigQuery dataset IDs to create (medallion architecture)"
   type        = list(string)
   default     = ["eu_football_raw", "eu_football_staging", "eu_football_mart"]
 }

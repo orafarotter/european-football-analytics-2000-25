@@ -1,6 +1,0 @@
-project_id             = "euro-football-analytics-20-25"
-region                 = "us-east1"
-zone                   = "us-east1-b"
-bucket_name            = "eu-football-raw-20-25"
-service_account_name   = "eu-football-pipeline-sa"
-composer_env_name      = "eu-football-composer-env"

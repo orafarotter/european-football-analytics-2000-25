@@ -12,17 +12,31 @@ provider "google" {
   region  = var.region
 }
 
-# ============================================================
-# 1. SERVICE ACCOUNT
-# ============================================================
+# ===========================
+# REQUIRED APIS
+# ===========================
+
+resource "google_project_service" "apis" {
+  for_each = toset([
+    "storage.googleapis.com",
+    "bigquery.googleapis.com",
+    "composer.googleapis.com",
+  ])
+
+  project            = var.project_id
+  service            = each.value
+  disable_on_destroy = false
+}
+
+# ===========================
+# SERVICE ACCOUNT
+# ===========================
 
 resource "google_service_account" "pipeline_sa" {
   account_id   = var.service_account_name
   display_name = "EU Football Pipeline Service Account"
-  description  = "Dedicated SA for the EU Football Analytics pipeline (least privilege)"
 }
 
-# Assign only the roles this pipeline needs
 locals {
   sa_roles = [
     "roles/storage.admin",
@@ -39,42 +53,33 @@ resource "google_project_iam_member" "pipeline_sa_roles" {
   member  = "serviceAccount:${google_service_account.pipeline_sa.email}"
 }
 
-# ============================================================
-# 2. CLOUD STORAGE — Data Lake bucket
-# ============================================================
+# ===========================
+# CLOUD STORAGE 
+# ===========================
 
 resource "google_storage_bucket" "data_lake" {
   name          = var.bucket_name
   location      = var.region
-  force_destroy = false # safety: prevent accidental deletion with data inside
+  force_destroy = true 
 
-  uniform_bucket_level_access = true # disable per-object ACLs (security best practice)
+  uniform_bucket_level_access = true 
 
   versioning {
-    enabled = false # raw CSV is always overwritten; versioning not needed here
+    enabled = false # raw CSV is always overwritten
   }
-
-  lifecycle_rule {
-    condition {
-      age = 90 # move objects older than 90 days to Nearline to save costs
-    }
-    action {
-      type          = "SetStorageClass"
-      storage_class = "NEARLINE"
-    }
-  }
+  
 }
 
-# ============================================================
-# 3. BIGQUERY DATASETS — Medallion layers (raw, staging, mart)
-# ============================================================
+# ===========================
+# BIGQUERY DATASETS 
+# ===========================
 
 resource "google_bigquery_dataset" "datasets" {
   for_each = toset(var.bq_datasets)
 
   dataset_id                 = each.value
   location                   = var.region
-  delete_contents_on_destroy = false # safety: prevent accidental data loss
+  delete_contents_on_destroy = true 
 
   labels = {
     project     = "eu-football-analytics"
@@ -82,9 +87,9 @@ resource "google_bigquery_dataset" "datasets" {
   }
 }
 
-# ============================================================
-# 4. CLOUD COMPOSER ENVIRONMENT (Managed Airflow)
-# ============================================================
+# ===========================
+# CLOUD COMPOSER ENVIRONMENT 
+# ===========================
 
 resource "google_composer_environment" "airflow" {
   name   = var.composer_env_name
@@ -94,10 +99,9 @@ resource "google_composer_environment" "airflow" {
     software_config {
       image_version = var.composer_image_version
 
-      # Python packages available to all DAGs
       pypi_packages = {
-        "kaggle"             = ">=1.6"
-        "apache-airflow-providers-google" = ">=10.0"
+        "kaggle" = "2.0.0"
+        "apache-airflow-providers-google" = "19.0.0"
       }
 
       env_variables = {
@@ -109,13 +113,37 @@ resource "google_composer_environment" "airflow" {
       }
     }
 
+    workloads_config {
+      scheduler {
+        cpu        = 0.5
+        memory_gb  = 2
+        storage_gb = 1
+        count      = 1
+      }
+      web_server {
+        cpu        = 0.5
+        memory_gb  = 2
+        storage_gb = 1
+      }
+      worker {
+        cpu        = 0.5
+        memory_gb  = 2
+        storage_gb = 1
+        min_count  = 1
+        max_count  = 3
+      }
+    }
+
+    environment_size = "ENVIRONMENT_SIZE_SMALL"
+
     node_config {
       service_account = google_service_account.pipeline_sa.email
     }
   }
 
   depends_on = [
+    google_project_service.apis,
     google_project_iam_member.pipeline_sa_roles,
-    google_storage_bucket.data_lake,
+    google_storage_bucket.data_lake    
   ]
 }
