@@ -30,7 +30,7 @@ variable "composer_env_name" {
 variable "composer_image_version" {
   description = "Composer image version"
   type        = string
-  default     = "airflow-2.10.5-build.27"
+  default     = "composer-3-airflow-2.10.5-build.27"
 }
 
 variable "bq_datasets" {

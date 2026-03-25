@@ -3,6 +3,41 @@
 PROJECT_ID: euro-football-analytics-20-25
 Number: 532542106535
 
+2. Ter o Terraform instalado
+https://developer.hashicorp.com/terraform/install
+
+3. Clonar o repositorio
+
+git clone <URL>
+
+4. Preencher o terraform.tfvars com os valores desejados
+
+5. Autenticar no GCP 
+
+gcloud auth application-default login
+
+5.1 Valide se esta no projeto correto
+
+gcloud config get-value project
+
+Se não estiver...
+
+gcloud config set project <PROJECT_ID>
+
+6. Acesse a pasta do Terraform e execute os comandos
+
+terraform init
+terraform plan
+terraform apply
+
+Aguarde 15 a 20 minutos
+
+
+
+
+
+
+
 2. Dentro do GCP, ative os seguintes recursos:
 
 gcloud services enable \

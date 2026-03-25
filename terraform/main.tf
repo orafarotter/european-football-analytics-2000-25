@@ -95,16 +95,16 @@ resource "google_composer_environment" "airflow" {
       image_version = var.composer_image_version
 
       pypi_packages = {
-        "kaggle" = "2.0.0"
-        "apache-airflow-providers-google" = "19.0.0"
+        "kaggle" = "==2.0.0"
+        "apache-airflow-providers-google" = "==19.0.0"
       }
 
       env_variables = {
-        GCS_BUCKET   = var.bucket_name
-        BQ_PROJECT   = var.project_id
-        BQ_RAW_DS    = "eu_football_raw"
-        BQ_STG_DS    = "eu_football_staging"
-        BQ_MART_DS   = "eu_football_mart"
+        PIPELINE_BUCKET = var.bucket_name
+        PIPELINE_PROJECT = var.project_id
+        PIPELINE_RAW_DS  = "eu_football_raw"
+        PIPELINE_STG_DS  = "eu_football_staging"
+        PIPELINE_MART_DS = "eu_football_mart"
       }
     }
 
