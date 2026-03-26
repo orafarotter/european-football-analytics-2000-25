@@ -5,3 +5,5 @@
 *.tfstate.backup
 terraform/terraform.tfvars
 crash.log
+
+./venv/
