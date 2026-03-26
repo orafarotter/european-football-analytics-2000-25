@@ -40,6 +40,10 @@ gcloud auth application-default login
 
   gcloud config set project <PROJECT_ID>
 
+Depois execute:
+
+gcloud auth application-default set-quota-project seu-project-id
+
 6. Ainda no diretório cd terraform/ execute os comandos:
 
 terraform init

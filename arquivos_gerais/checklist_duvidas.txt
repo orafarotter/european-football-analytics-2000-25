@@ -1,0 +1,2 @@
+> conferir se o terraform.tfvars.example está igual ao original (meu pc)
+
