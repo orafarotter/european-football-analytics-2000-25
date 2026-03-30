@@ -27,9 +27,9 @@ from airflow.models import Variable
 from airflow.operators.python import PythonOperator
 
 # Import pipeline scripts
-from download_dataset import download_dataset
-from upload_to_gcs import upload_to_gcs
-from create_external_table import create_external_table
+from scripts.download_dataset import download_dataset
+from scripts.upload_to_gcs import upload_to_gcs
+from scripts.create_external_table import create_external_table
 
 # ── Logging ───────────────────────────────────────────────────────────────────
 

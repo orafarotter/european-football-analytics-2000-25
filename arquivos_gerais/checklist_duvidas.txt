@@ -4,7 +4,12 @@
 
 
 
+> 30/03/25
 
+Retomar com o Claude
+
+Comentários — os comentários e docstrings estão em português em alguns trechos (ex: download_dataset.py). Como o projeto será avaliado em inglês, recomendo manter tudo em inglês.
+Onde?
 
 
 

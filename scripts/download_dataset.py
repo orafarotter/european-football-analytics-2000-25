@@ -14,7 +14,6 @@ Usage (local):
 import os
 import logging
 from pathlib import Path
-import kaggle
 
 # ── Constants ────────────────────────────────────────────────────────────────
 
@@ -35,7 +34,8 @@ logger = logging.getLogger(__name__)
 
 def _validate_kaggle_credentials() -> None:
     """Ensure Kaggle credentials are available as environment variables."""
-    missing = [var for var in ("KAGGLE_USERNAME", "KAGGLE_API_TOKEN") if not os.getenv(var)]
+    missing = [var for var in (
+        "KAGGLE_USERNAME", "KAGGLE_API_TOKEN") if not os.getenv(var)]
     if missing:
         raise EnvironmentError(
             f"Missing required environment variables: {', '.join(missing)}. "
@@ -62,6 +62,9 @@ def download_dataset() -> str:
         EnvironmentError: If Kaggle credentials are missing.
         FileNotFoundError: If the expected CSV file is not found after download.
     """
+
+    import kaggle
+
     _validate_kaggle_credentials()
     _prepare_download_dir(LOCAL_DOWNLOAD_DIR)
 
@@ -94,8 +97,3 @@ def download_dataset() -> str:
 
     logger.info("Dataset downloaded successfully: %s", csv_path)
     return str(csv_path)
-
-
-if __name__ == "__main__":
-    file_path = download_dataset()
-    print(f"File ready at: {file_path}")
