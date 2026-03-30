@@ -57,6 +57,16 @@ Aguarde de 15 a 20 minutos para o ambiente ser provisionado
 export KAGGLE_USERNAME=your_username
 export KAGGLE_API_TOKEN=your_api_key
 
+8. Faça o upload da DAG para o Composer
+
+gcloud composer environments storage dags import \
+    --environment <COMPOSER_ENV_NAME> \ #look at terraform.tfvars
+    --location us-east1 \
+    --source dags/football_pipeline_dag.py
+
+
+
+composer_env_name
 
 
 
