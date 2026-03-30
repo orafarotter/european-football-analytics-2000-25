@@ -64,6 +64,21 @@ gcloud composer environments storage dags import \
     --location us-east1 \
     --source dags/football_pipeline_dag.py
 
+gcloud composer environments storage dags import \
+    --environment <COMPOSER_ENV_NAME> \
+    --location us-east1 \
+    --source dags/download_dataset.py
+
+gcloud composer environments storage dags import \
+    --environment <COMPOSER_ENV_NAME> \
+    --location us-east1 \
+    --source dags/upload_to_gcs.py
+
+gcloud composer environments storage dags import \
+    --environment <COMPOSER_ENV_NAME> \
+    --location us-east1 \
+    --source dags/create_external_table.py
+
 
 
 composer_env_name
