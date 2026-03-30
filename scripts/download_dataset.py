@@ -8,7 +8,6 @@ storing sensitive files in the repository or the Composer environment.
 Usage (local):
     export KAGGLE_USERNAME=your_username
     export KAGGLE_API_TOKEN=your_api_key
-    python scripts/download_dataset.py
 """
 
 import os

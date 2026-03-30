@@ -5,9 +5,6 @@ This script is called by the Airflow DAG (upload_to_gcs task).
 Authentication is handled via Application Default Credentials (ADC):
   - In Composer: automatic via the pipeline service account.
   - Locally: run `gcloud auth application-default login` beforehand.
-
-Usage (local):
-    python scripts/upload_to_gcs.py
 """
 
 import os

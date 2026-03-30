@@ -3,10 +3,6 @@ create_external_table.py — Creates (or recreates) a BigQuery external table
 pointing to the raw Matches.csv file in GCS.
 
 This script is called by the Airflow DAG (create_external_table task).
-Authentication is handled via Application Default Credentials (ADC).
-
-Usage (local):
-    python scripts/create_external_table.py
 """
 
 import os
