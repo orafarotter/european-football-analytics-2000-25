@@ -6,10 +6,23 @@
 
 > 30/03/25
 
-Retomar com o Claude
+# Respondendo:
 
-Comentários — os comentários e docstrings estão em português em alguns trechos (ex: download_dataset.py). Como o projeto será avaliado em inglês, recomendo manter tudo em inglês.
-Onde?
+## download_dataset.py — a variável de credencial mudou de KAGGLE_KEY para KAGGLE_API_TOKEN. Isso é inconsistente com o que configuramos no Terraform (KAGGLE_KEY). Qual dos dois está configurado no Composer como variável de ambiente?
+Eu estava usando KAGGLE_API_TOKEN porque era sugerido dentro do Kaggle para já copiar.
+Em que arquivo do Terraform contém "KAGGLE_KEY"? Procurei e não achei. Por ora eu só estava setando manualmente no terminal.
+Sobre a pergunta "Qual dos dois está configurado no Composer como variável de ambiente?" não fiz a configuração ainda. 
+
+## upload_to_gcs.py e create_external_table.py — usam GCSHook e BigQueryHook respectivamente, o que é correto. Porém esses imports do Airflow não funcionam localmente fora do ambiente do Airflow. O teste local que fizemos anteriormente deixará de funcionar. Isso é aceitável para você?
+Qual teste local que fizemos anteriormente?
+Se o caminho correto é usar os hooks podemos descartar o teste local por ora.
+
+## Comentários — os comentários e docstrings estão em português em alguns trechos (ex: download_dataset.py). Como o projeto será avaliado em inglês, recomendo manter tudo em inglês.
+Não localizei nada em português dentro de "download_dataset". Em que arquivo localizou isso?
+
+Acredito que esteja alucinando em alguns pontos e precisamos nos manter firmes na execução do projeto.
+Posso abrir uma outra conversa e referenciar onde paramos?
+
 
 
 
