@@ -21,7 +21,7 @@ Se o caminho correto é usar os hooks podemos descartar o teste local por ora.
 Não localizei nada em português dentro de "download_dataset". Em que arquivo localizou isso?
 
 Acredito que esteja alucinando em alguns pontos e precisamos nos manter firmes na execução do projeto.
-Posso abrir uma outra conversa e referenciar onde paramos?
+Posso abrir uma outra conversa e referenciar onde paramos? O que me recomenda repassar nesta nova conversa?
 
 
 
