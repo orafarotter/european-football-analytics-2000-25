@@ -79,6 +79,13 @@ gcloud composer environments run $ENV_NAME \
 	--location us-east1 \
 	variables set -- KAGGLE_API_TOKEN $KAGGLE_API_TOKEN
 
+----> AVALIAR
+
+Subir dependencia
+
+gcloud composer environments update $ENV_NAME \
+    --location us-east1 \
+    --update-pypi-packages-from-file requirements.txt
 
 
 
