@@ -37,3 +37,16 @@ region                 = "us-east1"
 bucket_name            = "eu-football-raw-20-25"
 service_account_name   = "eu-football-pipeline-sa"
 composer_env_name      = "eu-football-composer-env"
+
+
+
+dbt
+
+PROJECT 
+eu-football-20-25
+
+Project subdirectory
+football_dbt
+
+DATASET
+dbt_eu_football

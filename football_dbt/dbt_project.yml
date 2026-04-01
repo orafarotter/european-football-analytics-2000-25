@@ -1,0 +1,34 @@
+name: 'football_dbt'
+version: '1.0.0'
+config-version: 2
+
+profile: 'football_dbt'
+
+model-paths: ["models"]
+seed-paths:  ["seeds"]
+macro-paths: ["macros"]
+test-paths:  ["tests"]
+
+target-path: "target"
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  football_dbt:
+    staging:
+      +materialized: view
+      +dataset: eu_football_staging   # maps to BigQuery dataset created by Terraform
+
+    mart:
+      +materialized: table
+      +dataset: eu_football_mart      # maps to BigQuery dataset created by Terraform
+
+seeds:
+  football_dbt:
+    leagues:
+      +dataset: eu_football_raw       # seed lands in the raw dataset alongside the external table
+      +column_types:
+        code:        string
+        country:     string
+        league_name: string

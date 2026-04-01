@@ -56,9 +56,10 @@ Aguarde até o ambiente ser provisionado (pegue um café).
 
 7. Dentro do GCP>IAM>Service Accounts, baixe a chave da conta de serviço que foi criada pelo Terraform
 
-8. Crie um projeto no dbt Cloud e utilize a conta de serviço recém criada para fazer a conexão com o BigQuery.
-
-
+8. dbt Cloud 
+  1. Crie um projeto no dbt Cloud;
+  2. Utilize a conta de serviço recém criada para fazer a conexão com o BigQuery
+  3. Estabeleça conexão com seu repositório e aponte para pasta 'xxxx' em 
 
 
 

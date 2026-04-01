@@ -1,0 +1,57 @@
+version: 2
+
+sources:
+  - name: eu_football_raw
+    database: "{{ env_var('DBT_BIGQUERY_PROJECT') }}"
+    schema: eu_football_raw
+    tables:
+      - name: raw_matches
+        description: >
+          Raw football match data loaded as a BigQuery external table pointing to
+          gs://<bucket>/raw/Matches.csv. All numeric columns are FLOAT64 in the
+          external table because many cells are empty (nullable) in the source CSV.
+
+models:
+  - name: stg_matches
+    description: >
+      Cleaned and typed staging model for football matches.
+      Casts FLOAT64 goal/stats columns to INT64, converts MatchDate
+      (already in YYYY-MM-DD format) to DATE, and joins with the leagues
+      seed to enrich division codes with country and league_name.
+    columns:
+      - name: match_id
+        description: "Surrogate key: MD5 of Division + MatchDate + HomeTeam + AwayTeam"
+        tests:
+          - unique
+          - not_null
+
+      - name: match_date
+        description: "Date of the match cast from YYYY-MM-DD string to DATE"
+        tests:
+          - not_null
+
+      - name: division
+        description: "League division code as it appears in the source (e.g. E0, SP1, D1)"
+        tests:
+          - not_null
+
+      - name: home_team
+        tests:
+          - not_null
+
+      - name: away_team
+        tests:
+          - not_null
+
+      - name: full_time_result
+        description: "Full-time result: H (Home win), A (Away win), D (Draw)"
+        tests:
+          - accepted_values:
+              values: ['H', 'A', 'D']
+
+      - name: league_name
+        description: "Human-readable league name joined from the leagues seed"
+        tests:
+          - relationships:
+              to: ref('leagues')
+              field: league_name
