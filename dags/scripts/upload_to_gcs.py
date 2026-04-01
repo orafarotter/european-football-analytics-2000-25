@@ -10,7 +10,6 @@ Authentication is handled via Application Default Credentials (ADC):
 import os
 import logging
 from pathlib import Path
-from airflow.providers.google.cloud.hooks.gcs import GCSHook
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 
@@ -54,6 +53,7 @@ def upload_to_gcs(
             "Make sure download_dataset.py ran successfully before this step."
         )
 
+    from airflow.providers.google.cloud.hooks.gcs import GCSHook
     hook = GCSHook()
 
     logger.info(

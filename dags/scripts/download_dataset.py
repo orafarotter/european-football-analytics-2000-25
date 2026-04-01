@@ -31,15 +31,10 @@ logger = logging.getLogger(__name__)
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
-def _validate_kaggle_credentials() -> None:
-    """Ensure Kaggle credentials are available as environment variables."""
-    missing = [var for var in (
-        "KAGGLE_USERNAME", "KAGGLE_API_TOKEN") if not os.getenv(var)]
-    if missing:
-        raise EnvironmentError(
-            f"Missing required environment variables: {', '.join(missing)}. "
-            "Set KAGGLE_USERNAME and KAGGLE_API_TOKEN before running this script."
-        )
+def _load_kaggle_credentials() -> None:
+    from airflow.models import Variable
+    os.environ["KAGGLE_USERNAME"] = Variable.get("KAGGLE_USERNAME")
+    os.environ["KAGGLE_KEY"] = Variable.get("KAGGLE_API_TOKEN")
 
 
 def _prepare_download_dir(path: Path) -> None:
@@ -64,7 +59,7 @@ def download_dataset() -> str:
 
     import kaggle
 
-    _validate_kaggle_credentials()
+    _load_kaggle_credentials()
     _prepare_download_dir(LOCAL_DOWNLOAD_DIR)
 
     logger.info("Starting download of dataset: %s", KAGGLE_DATASET)

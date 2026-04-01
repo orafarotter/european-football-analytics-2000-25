@@ -67,17 +67,19 @@ gcloud composer environments storage dags import \
 gcloud composer environments storage dags import \
     --environment <COMPOSER_ENV_NAME> \
     --location us-east1 \
-    --source dags/download_dataset.py
+    --source dags/scripts/
 
-gcloud composer environments storage dags import \
-    --environment <COMPOSER_ENV_NAME> \
-    --location us-east1 \
-    --source dags/upload_to_gcs.py
+  8.1. Sete as variáveis do Kaggle no ambiente
 
-gcloud composer environments storage dags import \
-    --environment <COMPOSER_ENV_NAME> \
-    --location us-east1 \
-    --source dags/create_external_table.py
+gcloud composer environments run $ENV_NAME \
+	--location us-east1 \
+	variables set -- KAGGLE_USERNAME $KAGGLE_USERNAME
+
+gcloud composer environments run $ENV_NAME \
+	--location us-east1 \
+	variables set -- KAGGLE_API_TOKEN $KAGGLE_API_TOKEN
+
+
 
 
 
