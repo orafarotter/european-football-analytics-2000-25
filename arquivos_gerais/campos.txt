@@ -25,3 +25,9 @@
 | AwayYellow    | INTEGER   |
 | HomeRed       | INTEGER   |
 | AwayRed       | INTEGER   |
+
+
+celepar
+export KAGGLE_API_TOKEN=KGAT_3839db6f2bf06aef32e2a4ec22c43b0c
+
+casa

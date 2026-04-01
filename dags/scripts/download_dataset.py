@@ -56,10 +56,10 @@ def download_dataset() -> str:
         EnvironmentError: If Kaggle credentials are missing.
         FileNotFoundError: If the expected CSV file is not found after download.
     """
+    _load_kaggle_credentials()
 
     import kaggle
 
-    _load_kaggle_credentials()
     _prepare_download_dir(LOCAL_DOWNLOAD_DIR)
 
     logger.info("Starting download of dataset: %s", KAGGLE_DATASET)

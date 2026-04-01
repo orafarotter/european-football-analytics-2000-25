@@ -26,7 +26,9 @@ PASSOS
 git clone <URL>
 
 4. Acesse o arquivo terraform.tfvars.example em cd terraform/ e informe os valores das variáveis.
-  4.1. Renomeie o arquivo para terraform.tfvars
+  4.1. informe os valores das variáveis 
+  4.2. Copie o valor de 'composer_env_name' e salve em uma variável no terminal, como: export COMPOSER_ENV_NAME=<nome>
+  4.3. Renomeie o arquivo para terraform.tfvars
 
 5. Autentique-se no GCP 
 
@@ -50,14 +52,14 @@ terraform init
 terraform plan
 terraform apply
 
-Aguarde de 15 a 20 minutos para o ambiente ser provisionado
+Aguarde até o ambiente ser provisionado (pegue um café).
 
 7. No seu terminal execute os seguintes comandos:
 
 export KAGGLE_USERNAME=your_username
 export KAGGLE_API_TOKEN=your_api_key
 
-8. Faça o upload da DAG para o Composer
+8. Faça o upload da DAG e das tasks para o Composer
 
 gcloud composer environments storage dags import \
     --environment <COMPOSER_ENV_NAME> \ #look at terraform.tfvars
@@ -79,9 +81,7 @@ gcloud composer environments run $ENV_NAME \
 	--location us-east1 \
 	variables set -- KAGGLE_API_TOKEN $KAGGLE_API_TOKEN
 
-----> AVALIAR
-
-Subir dependencia
+  8.2. Suba a biblioteca do Kaggle
 
 gcloud composer environments update $ENV_NAME \
     --location us-east1 \
@@ -90,11 +90,13 @@ gcloud composer environments update $ENV_NAME \
 
 
 
-composer_env_name
+
+SOB ANÁLISE  --------------------------------------------------
 
 
 
 
+RASCUNHO ------------------------------------------------------
 
 2. Dentro do GCP, ative os seguintes recursos:
 
