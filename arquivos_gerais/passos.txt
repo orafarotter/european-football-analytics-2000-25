@@ -54,6 +54,15 @@ terraform apply
 
 Aguarde até o ambiente ser provisionado (pegue um café).
 
+7. Dentro do GCP>IAM>Service Accounts, baixe a chave da conta de serviço que foi criada pelo Terraform
+
+8. Crie um projeto no dbt Cloud e utilize a conta de serviço recém criada para fazer a conexão com o BigQuery.
+
+
+
+
+
+
 7. No seu terminal execute os seguintes comandos:
 
 export KAGGLE_USERNAME=your_username
