@@ -89,10 +89,39 @@ Aguarde até o ambiente ser provisionado (pegue um café).
         Save
 
   6. Criar o Environment Variables
-    + Add variable
-    Key: DBT_BIGQUERY_PROJECT
-    Project default: <GCP_PROJECT_ID>
-    Save
+    1. Acesse Orchestration >> Environments
+      - Aba Environment variables
+    2. + Add variable
+    3. Key: DBT_BIGQUERY_PROJECT
+    4. Project default: <GCP_PROJECT_ID>
+    5. Save
+
+  7. Criar o Jobs
+    1. Acesse Orchestration >> Jobs
+      + Create job > Deploy job
+        Job settings
+          Job name: football_pipeline_production
+          Environment: previous environment created 
+      Execution settings
+        Include the commands in the order below:
+          dbt deps
+          dbt seed --select leagues
+          dbt run --select stg_matches fct_european_matches
+          dbt test --select stg_matches fct_european_matches
+      
+        Check 'Generate docs on run' to automatically update dbt Catalog documentation each time this job runs
+
+      Schedule
+        Leave the toggle 'Run on schedule' off.
+        Airflow will activate the job via API.
+
+      Save
+
+
+
+
+
+
 
 
 
