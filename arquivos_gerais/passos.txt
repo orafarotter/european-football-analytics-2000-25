@@ -104,7 +104,6 @@ Aguarde até o ambiente ser provisionado (pegue um café).
           Environment: previous environment created 
       Execution settings
         Include the commands in the order below:
-          dbt deps
           dbt seed --select leagues
           dbt run --select stg_matches fct_european_matches
           dbt test --select stg_matches fct_european_matches
@@ -116,6 +115,14 @@ Aguarde até o ambiente ser provisionado (pegue um café).
         Airflow will activate the job via API.
 
       Save
+
+    On the upper right side, click in "API trigger" and copy the values of:
+      - Account ID
+      - Job ID
+    
+    Leverage the open pop-up and click in "You can find your API key on your profile page."
+
+    
 
 
 
