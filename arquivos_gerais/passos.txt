@@ -81,6 +81,12 @@ Aguarde até o ambiente ser provisionado (pegue um café).
         - dbt version: Latest
 
       Connection profiles
+        + Assign profile
+        - Save
+
+        + Assign profile
+
+        Save
 
 
 

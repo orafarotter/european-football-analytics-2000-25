@@ -1,0 +1,12 @@
+dbt CONHECIMENTO
+
+Em projetos com dbt, o schema.yml é colocado dentro das pastas (staging, marts, etc.) por organização lógica, manutenção e governança dos modelos. A estrutura não é obrigatória, mas segue boas práticas amplamente adotadas.
+
+Para sincronizar seu repositório com o dbt Cloud clique em "Pull from remote"
+
+#instalar dependências (pacotes) definidas no arquivo packages.yml do seu projeto dbt
+dbt deps 
+
+para achar as configurações no dbt cloud ui...
+clica no SET UP CLI no cantoesquerdo inferior
+dai um menu irá aparecer
