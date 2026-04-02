@@ -1,18 +1,6 @@
 -- models/staging/stg_matches.sql
 -- Staging model: cleans raw match data, casts types, and joins with leagues seed.
 -- Source: eu_football_raw.raw_matches (BigQuery external table → GCS raw/Matches.csv)
---
--- Raw column reference (exact names from the CSV / external table schema):
---   Division, MatchDate, MatchTime, HomeTeam, AwayTeam,
---   HomeElo, AwayElo, Form3Home, Form5Home, Form3Away, Form5Away,
---   FTHome, FTAway, FTResult, HTHome, HTAway, HTResult,
---   HomeShots, AwayShots, HomeTarget, AwayTarget,
---   HomeFouls, AwayFouls, HomeCorners, AwayCorners,
---   HomeYellow, AwayYellow, HomeRed, AwayRed,
---   OddHome, OddDraw, OddAway, MaxHome, MaxDraw, MaxAway,
---   Over25, Under25, MaxOver25, MaxUnder25,
---   HandiSize, HandiHome, HandiAway,
---   C_LTH, C_LTA, C_VHD, C_VAD, C_HTB, C_PHB
 
 with source as (
 
@@ -24,14 +12,11 @@ renamed as (
 
     select
         -- Surrogate key: division + date + teams is unique per match
-        {{ dbt_utils.generate_surrogate_key(
-            ['Division', 'MatchDate', 'HomeTeam', 'AwayTeam']
-        ) }}                                            as match_id,
+        {{ dbt_utils.generate_surrogate_key(['Division', 'MatchDate', 'HomeTeam', 'AwayTeam']) }}  as match_id,
 
         -- Match metadata
         Division                                        as division,
 
-        -- MatchDate is already ISO format (YYYY-MM-DD) — no format string needed
         safe_cast(MatchDate as DATE)                    as match_date,
 
         HomeTeam                                        as home_team,

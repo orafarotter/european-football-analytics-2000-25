@@ -8,8 +8,7 @@ sources:
       - name: raw_matches
         description: >
           Raw football match data loaded as a BigQuery external table pointing to
-          gs://<bucket>/raw/Matches.csv. All numeric columns are FLOAT64 in the
-          external table because many cells are empty (nullable) in the source CSV.
+          gs://<bucket>/raw/Matches.csv. 
 
 models:
   - name: stg_matches

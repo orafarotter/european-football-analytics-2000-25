@@ -1,5 +1,5 @@
 -- models/mart/fct_european_matches.sql
--- Fact table: main European leagues only, with calculated metrics.
+-- Fact table: 10strongest European Leagues only, with calculated metrics.
 --
 -- Partitioned by match_date (YEAR granularity) → efficient time-range queries.
 -- Clustered by division, league_name → efficient per-league queries in Looker Studio.
@@ -21,24 +21,16 @@ with european_matches as (
     select *
     from {{ ref('stg_matches') }}
     where division in (
-        -- Top-flight leagues
         'E0',   -- England:     Premier League
         'SP1',  -- Spain:       La Liga
-        'D1',   -- Germany:     Bundesliga
         'I1',   -- Italy:       Serie A
+        'D1',   -- Germany:     Bundesliga
         'F1',   -- France:      Ligue 1
-        'N1',   -- Netherlands: Eredivisie
         'B1',   -- Belgium:     Pro League
         'P1',   -- Portugal:    Primeira Liga
-        'T1',   -- Turkey:      Süper Lig
-        'SC0',  -- Scotland:    Premiership
-        'G1',   -- Greece:      Super League
-        -- Second-tier leagues (included to allow cross-tier analysis)
-        'E1',   -- England:     Championship
-        'SP2',  -- Spain:       Segunda División
-        'D2',   -- Germany:     2. Bundesliga
-        'I2',   -- Italy:       Serie B
-        'F2'    -- France:      Ligue 2
+        'E1',   -- England:     Championship        
+        'DEN',   -- Denmark:    Superliga
+        'POL',   -- Poland:     Ekstraklasa
     )
     and match_date     is not null
     and home_goals_ft  is not null
@@ -75,14 +67,6 @@ enriched as (
         full_time_result,
         half_time_result,
 
-        -- Performance metrics
-        home_elo,
-        away_elo,
-        form_3_home,
-        form_5_home,
-        form_3_away,
-        form_5_away,
-
         -- Match stats (sparse)
         home_shots,
         away_shots,
@@ -97,7 +81,6 @@ enriched as (
 
         -- Calculated metrics
         home_goals_ft + away_goals_ft                   as total_goals,
-        home_goals_ft - away_goals_ft                   as goal_difference,
 
         case full_time_result
             when 'H' then 'Home Win'
@@ -105,19 +88,32 @@ enriched as (
             when 'D' then 'Draw'
         end                                             as match_result_label,
 
+        case 
+            when home_goals_ft > away_goals_ft then home_goals_ft - away_goals_ft
+            when away_goals_ft > home_goals_ft then away_goals_ft - home_goals_ft
+            else 0
+        end                                             as goal_difference,
+
+        case 
+            when (home_goals_ht + away_goals_ht)>0 and (home_goals_ht + away_goals_ht) = (home_goals_ft + away_goals_ft) then 'All Goals in First Half'
+            when (home_goals_ht + away_goals_ht)=0 and (home_goals_ft + away_goals_ft)>0 then 'All Goals in Second Half'
+            when (home_goals_ht + away_goals_ht)=0 and (home_goals_ft + away_goals_ft)=0 then 'No Goals'
+            else 'Goals in Both Halves'
+        end                                             as goal_timing,            
+            
+        case  
+            home_goals_ft > away_goals_ft then home_goals_ft - away_goals_ft
+            when away_goals_ft > home_goals_ft then away_goals_ft - home_goals_ft
+            else 0
+        end                                             as goal_difference,
+
+
         case
             when home_goals_ft + away_goals_ft = 0 then 'Goalless'
             when home_goals_ft + away_goals_ft <= 2 then 'Low Scoring'
             when home_goals_ft + away_goals_ft <= 4 then 'Normal'
             else 'High Scoring'
-        end                                             as scoring_category,
-
-        -- Betting odds
-        odds_home,
-        odds_draw,
-        odds_away,
-        odds_over_25,
-        odds_under_25
+        end                                             as scoring_category
 
     from european_matches
 

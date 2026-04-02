@@ -1,3 +1,8 @@
+https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-power-rankings
+Data 02/04/2026
+
+----------------
+
 PRE REQUISITOS 
 
 1. Ter uma conta no Google Cloud, uma billing account e um projeto
