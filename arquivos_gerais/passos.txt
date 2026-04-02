@@ -88,6 +88,12 @@ Aguarde até o ambiente ser provisionado (pegue um café).
 
         Save
 
+  6. Criar o Environment Variables
+    + Add variable
+    Key: DBT_BIGQUERY_PROJECT
+    Project default: <GCP_PROJECT_ID>
+    Save
+
 
 
 
