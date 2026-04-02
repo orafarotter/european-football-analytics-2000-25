@@ -1,4 +1,3 @@
--- models/staging/stg_matches.sql
 -- Staging model: cleans raw match data, casts types, and joins with leagues seed.
 -- Source: eu_football_raw.raw_matches (BigQuery external table → GCS raw/Matches.csv)
 

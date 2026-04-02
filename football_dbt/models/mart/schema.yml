@@ -3,11 +3,12 @@ version: 2
 models:
   - name: fct_european_matches
     description: >
-      Fact table with European football matches from the top leagues (2000–2025).
-      Partitioned by match_date (YEAR granularity) and clustered by division and
-      league_name for optimised query performance in BigQuery and Looker Studio.
-      Includes calculated columns: total_goals, goal_difference,
-      match_result_label, and scoring_category.
+      Fact table with European football matches from the top 10 leagues (2000–2025).
+      Partitioned by match_date (year granularity) and clustered by division and
+      league_name to optimize query performance in BigQuery and Looker Studio.
+      Includes the following calculated columns: total_goals, match_result_label, goal_difference, 
+      goal_timing and scoring_category.
+
     columns:
       - name: match_id
         description: "Unique surrogate key for each match"
@@ -50,6 +51,17 @@ models:
         tests:
           - accepted_values:
               values: ['Home Win', 'Away Win', 'Draw']
+
+      - name: goal_difference
+        description: "Absolute difference in goals between home and away teams"
+        tests:
+          - not_null
+
+      - name: goal_timing
+        description: "Timing of goals scored in the match"
+        tests:
+          - accepted_values:
+              values: ['No Goals', 'All Goals in First Half', 'All Goals in Second Half', 'Goals in Both Halves']
 
       - name: scoring_category
         description: "Match classified by total goals: Goalless / Low Scoring / Normal / High Scoring"

@@ -14,8 +14,7 @@ models:
   - name: stg_matches
     description: >
       Cleaned and typed staging model for football matches.
-      Casts FLOAT64 goal/stats columns to INT64, converts MatchDate
-      (already in YYYY-MM-DD format) to DATE, and joins with the leagues
+      Casts FLOAT64 goal/stats columns to INT64, converts MatchDate to DATE and joins with the leagues
       seed to enrich division codes with country and league_name.
     columns:
       - name: match_id
@@ -24,26 +23,28 @@ models:
           - unique
           - not_null
 
+      - name: division
+        description: "League that the match was played in - country code + division number."
+        tests:
+          - not_null
+
       - name: match_date
         description: "Date of the match cast from YYYY-MM-DD string to DATE"
         tests:
           - not_null
 
-      - name: division
-        description: "League division code as it appears in the source (e.g. E0, SP1, D1)"
-        tests:
-          - not_null
-
       - name: home_team
+        description: "Home team's club name in English, abbreviated if needed."
         tests:
           - not_null
 
       - name: away_team
+        description: "Away team's club name in English, abbreviated if needed."
         tests:
           - not_null
 
       - name: full_time_result
-        description: "Full-time result: H (Home win), A (Away win), D (Draw)"
+        description: "Full-time result (H for Home win, D for Draw and A for Away win)."
         tests:
           - accepted_values:
               values: ['H', 'A', 'D']

@@ -1,3 +1,7 @@
+DATASET
+https://www.kaggle.com/datasets/adamgbor/club-football-match-data-2000-2025
+
+PRINCIPAIS LIGAS
 https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-power-rankings
 Data 02/04/2026
 

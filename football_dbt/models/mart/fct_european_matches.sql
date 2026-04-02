@@ -1,5 +1,4 @@
--- models/mart/fct_european_matches.sql
--- Fact table: 10strongest European Leagues only, with calculated metrics.
+-- Fact table: 10 strongest European Leagues only, with calculated metrics.
 --
 -- Partitioned by match_date (YEAR granularity) → efficient time-range queries.
 -- Clustered by division, league_name → efficient per-league queries in Looker Studio.
@@ -99,14 +98,7 @@ enriched as (
             when (home_goals_ht + away_goals_ht)=0 and (home_goals_ft + away_goals_ft)>0 then 'All Goals in Second Half'
             when (home_goals_ht + away_goals_ht)=0 and (home_goals_ft + away_goals_ft)=0 then 'No Goals'
             else 'Goals in Both Halves'
-        end                                             as goal_timing,            
-            
-        case  
-            home_goals_ft > away_goals_ft then home_goals_ft - away_goals_ft
-            when away_goals_ft > home_goals_ft then away_goals_ft - home_goals_ft
-            else 0
-        end                                             as goal_difference,
-
+        end                                             as goal_timing,                     
 
         case
             when home_goals_ft + away_goals_ft = 0 then 'Goalless'
