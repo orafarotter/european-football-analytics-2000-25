@@ -18,16 +18,16 @@ models:
   football_dbt:
     staging:
       +materialized: view
-      +dataset: eu_football_staging   # maps to BigQuery dataset created by Terraform
+      +schema: eu_football_staging   # maps to BigQuery dataset created by Terraform
 
     mart:
       +materialized: table
-      +dataset: eu_football_mart      # maps to BigQuery dataset created by Terraform
+      +schema: eu_football_mart      # maps to BigQuery dataset created by Terraform
 
 seeds:
   football_dbt:
     leagues:
-      +dataset: eu_football_raw       # seed lands in the raw dataset alongside the external table
+      +schema: eu_football_raw       # seed lands in the raw schema alongside the external table
       +column_types:
         code:        string
         country:     string

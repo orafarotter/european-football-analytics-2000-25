@@ -73,12 +73,12 @@ Aguarde até o ambiente ser provisionado (pegue um café).
 
 
 
-7. No seu terminal execute os seguintes comandos:
+9. No seu terminal execute os seguintes comandos:
 
 export KAGGLE_USERNAME=your_username
 export KAGGLE_API_TOKEN=your_api_key
 
-8. Faça o upload da DAG e das tasks para o Composer
+10. Faça o upload da DAG e das tasks para o Composer (talvez caiba um bash aqui)
 
 gcloud composer environments storage dags import \
     --environment <COMPOSER_ENV_NAME> \ #look at terraform.tfvars
@@ -90,7 +90,7 @@ gcloud composer environments storage dags import \
     --location us-east1 \
     --source dags/scripts/
 
-  8.1. Sete as variáveis do Kaggle no ambiente
+  10.1. Sete as variáveis do Kaggle no ambiente
 
 gcloud composer environments run $ENV_NAME \
 	--location us-east1 \
@@ -100,7 +100,7 @@ gcloud composer environments run $ENV_NAME \
 	--location us-east1 \
 	variables set -- KAGGLE_API_TOKEN $KAGGLE_API_TOKEN
 
-  8.2. Suba a biblioteca do Kaggle
+  10.2. Suba a biblioteca do Kaggle
 
 gcloud composer environments update $ENV_NAME \
     --location us-east1 \
