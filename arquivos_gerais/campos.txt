@@ -28,6 +28,9 @@
 
 
 celepar
+
+export KAGGLE_USERNAME=rafarotter
 export KAGGLE_API_TOKEN=KGAT_3839db6f2bf06aef32e2a4ec22c43b0c
+export COMPOSER_ENV_NAME=eu-football-composer-env
 
 casa
