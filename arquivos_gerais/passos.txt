@@ -68,7 +68,21 @@ Aguarde até o ambiente ser provisionado (pegue um café).
 8. dbt Cloud 
   1. Crie um projeto no dbt Cloud;
   2. Utilize a conta de serviço recém criada para fazer a conexão com o BigQuery
-  3. Estabeleça conexão com seu repositório e aponte para pasta 'xxxx' em 
+  3. Estabeleça conexão com seu repositório e aponte para pasta 'football_dbt'
+  4. No terminal do dbt execute o comando abaixo para instalar as dependencias
+    dbt deps
+  5. Criar o Environment de Produção
+    1. Acesse Orchestration >> Environments
+    2. + Create environment
+      Environment settings
+        - Environment name: Production
+        - Environment type: Deployment
+        - Set deployment type: Production
+        - dbt version: Latest
+
+      Connection profiles
+
+
 
 
 
