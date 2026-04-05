@@ -2,28 +2,28 @@
 football_pipeline_dag.py — Airflow DAG for the EU Football Analytics pipeline.
 
 Pipeline flow:
-    download_csv >> upload_to_gcs >> create_external_table >> trigger_dbt_job
+    download_csv >> upload_to_gcs >> create_external_table >> dbt_run
+
+This DAG runs dbt Core locally inside the Composer environment using BashOperator.
+No dbt Cloud account or API token is required. Authentication to BigQuery is handled
+automatically via the Composer environment's attached Service Account.
 
 Environment variables (set via Composer env_variables in Terraform):
     PIPELINE_BUCKET   : GCS bucket name
     PIPELINE_PROJECT  : GCP project ID
     PIPELINE_RAW_DS   : BigQuery raw dataset ID
-
-Airflow Variables (set manually in the Airflow UI or via gcloud):
-    DBT_ACCOUNT_ID    : dbt Cloud account ID
-    DBT_JOB_ID        : dbt Cloud job ID to trigger
-    DBT_API_TOKEN     : dbt Cloud API token
+    DBT_PROJECT_DIR   : Absolute path to the dbt project inside the Composer worker
+                        Default: /home/airflow/gcs/dags/football_dbt
 """
 
 from __future__ import annotations
 
 import logging
-import time
+import os
 from datetime import datetime, timedelta
 
-import requests
 from airflow import DAG
-from airflow.models import Variable
+from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 
 # Import pipeline scripts
@@ -35,6 +35,19 @@ from scripts.create_external_table import create_external_table
 
 logger = logging.getLogger(__name__)
 
+# ── Configuration ─────────────────────────────────────────────────────────────
+
+# The dbt project lives under the Composer DAGs folder, which is synced from GCS.
+# Cloud Composer mounts the DAGs bucket at /home/airflow/gcs/dags inside each worker.
+DBT_PROJECT_DIR = os.getenv(
+    "DBT_PROJECT_DIR",
+    "/home/airflow/gcs/dags/football_dbt",
+)
+
+# profiles.yml is placed alongside the dbt project (see football_dbt/profiles.yml).
+# Passing --profiles-dir keeps everything self-contained inside the repo.
+DBT_PROFILES_DIR = DBT_PROJECT_DIR
+
 # ── Default arguments ─────────────────────────────────────────────────────────
 
 default_args = {
@@ -45,84 +58,11 @@ default_args = {
     "email_on_retry": False,
 }
 
-# ── dbt Cloud trigger ─────────────────────────────────────────────────────────
-
-
-def trigger_dbt_job() -> None:
-    """
-    Trigger a dbt Cloud job via the dbt Cloud API v2 and wait for completion.
-
-    Reads DBT_ACCOUNT_ID, DBT_JOB_ID, and DBT_API_TOKEN from Airflow Variables.
-
-    Raises:
-        RuntimeError: If the dbt job fails or times out.
-    """
-    account_id = Variable.get("DBT_ACCOUNT_ID")
-    job_id = Variable.get("DBT_JOB_ID")
-    api_token = Variable.get("DBT_API_TOKEN")
-
-    headers = {
-        "Authorization": f"Token {api_token}",
-        "Content-Type": "application/json",
-    }
-
-    # Trigger the job
-    trigger_url = (
-        f"https://cloud.getdbt.com/api/v2/accounts/{account_id}/jobs/{job_id}/run/"
-    )
-    trigger_payload = {"cause": "Triggered by Airflow DAG: football_pipeline"}
-
-    logger.info("Triggering dbt Cloud job %s ...", job_id)
-    response = requests.post(
-        trigger_url, headers=headers, json=trigger_payload)
-    response.raise_for_status()
-
-    run_id = response.json()["data"]["id"]
-    logger.info("dbt Cloud run started. Run ID: %s", run_id)
-
-    # Poll for completion (max 30 minutes, check every 30 seconds)
-    status_url = (
-        f"https://cloud.getdbt.com/api/v2/accounts/{account_id}/runs/{run_id}/"
-    )
-    max_attempts = 60
-    poll_interval_seconds = 30
-
-    for attempt in range(max_attempts):
-        time.sleep(poll_interval_seconds)
-        status_response = requests.get(status_url, headers=headers)
-        status_response.raise_for_status()
-
-        run_data = status_response.json()["data"]
-        status = run_data["status"]
-        status_humanized = run_data.get("status_humanized", status)
-
-        logger.info(
-            "Attempt %d/%d — dbt run status: %s",
-            attempt + 1,
-            max_attempts,
-            status_humanized,
-        )
-
-        # dbt Cloud status codes: 1=Queued, 2=Starting, 3=Running, 10=Success, 20=Error, 30=Cancelled
-        if status == 10:
-            logger.info("dbt Cloud job completed successfully.")
-            return
-        elif status in (20, 30):
-            raise RuntimeError(
-                f"dbt Cloud job failed with status '{status_humanized}'. "
-                f"Check the dbt Cloud UI for run ID {run_id}."
-            )
-
-    raise RuntimeError(
-        f"dbt Cloud job timed out after {max_attempts * poll_interval_seconds / 60:.0f} minutes."
-    )
-
-
 # ── DAG definition ────────────────────────────────────────────────────────────
 
 with DAG(
     dag_id="football_pipeline",
-    description="End-to-end pipeline: Kaggle → GCS → BigQuery → dbt Cloud",
+    description="End-to-end pipeline: Kaggle → GCS → BigQuery → dbt Core",
     schedule_interval="@weekly",
     start_date=datetime(2025, 1, 1),
     catchup=False,
@@ -145,9 +85,49 @@ with DAG(
         python_callable=create_external_table,
     )
 
-    t4_dbt = PythonOperator(
-        task_id="trigger_dbt_job",
-        python_callable=trigger_dbt_job,
+    # ── dbt Core tasks ────────────────────────────────────────────────────────
+    # We split dbt into two tasks so failures are easier to diagnose.
+    # dbt seed loads the leagues.csv reference table before the models run.
+
+    t4_dbt_deps = BashOperator(
+    task_id="dbt_deps",
+    bash_command=(
+        f"dbt deps "
+        f"--project-dir {DBT_PROJECT_DIR} "
+        f"--profiles-dir {DBT_PROFILES_DIR}"
+    ),
     )
 
-    t1_download >> t2_upload >> t3_external_table >> t4_dbt
+    t5_dbt_seed = BashOperator(
+        task_id="dbt_seed",
+        bash_command=(
+            f"dbt seed "
+            f"--project-dir {DBT_PROJECT_DIR} "
+            f"--profiles-dir {DBT_PROFILES_DIR} "
+            f"--target prod "
+            f"--full-refresh"  # always reload seed data so it stays in sync
+        ),
+    )
+
+    t6_dbt_run = BashOperator(
+        task_id="dbt_run",
+        bash_command=(
+            f"dbt run "
+            f"--project-dir {DBT_PROJECT_DIR} "
+            f"--profiles-dir {DBT_PROFILES_DIR} "
+            f"--target prod"
+        ),
+    )
+
+    t7_dbt_test = BashOperator(
+        task_id="dbt_test",
+        bash_command=(
+            f"dbt test "
+            f"--project-dir {DBT_PROJECT_DIR} "
+            f"--profiles-dir {DBT_PROFILES_DIR} "
+            f"--target prod"
+        ),
+    )
+
+    # ── Task dependencies ─────────────────────────────────────────────────────
+    t1_download >> t2_upload >> t3_external_table >> t4_dbt_deps >> t5_dbt_seed >> t6_dbt_run >> t7_dbt_test

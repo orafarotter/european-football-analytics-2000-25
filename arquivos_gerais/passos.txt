@@ -162,7 +162,7 @@ gcloud composer environments run $ENV_NAME \
 	--location us-east1 \
 	variables set -- KAGGLE_API_TOKEN $KAGGLE_API_TOKEN
 
-  10.2. Suba a biblioteca do Kaggle
+  10.2. Suba a biblioteca do Kaggle [ATENÇÃO: TALVEZ NÃO SEJA NECESSÁRIO]
 
 gcloud composer environments update $ENV_NAME \
     --location us-east1 \
@@ -174,7 +174,16 @@ gcloud composer environments update $ENV_NAME \
 
 SOB ANÁLISE  --------------------------------------------------
 
+# Pegue o bucket do Composer
+gcloud composer environments describe eu-football-composer-env \
+  --location us-east1 \
+  --format="value(config.dagGcsPrefix)"
 
+# Faça o upload (substitua YOUR_BUCKET pelo valor retornado acima)
+gcloud storage cp -r football_dbt gs://us-east1-eu-football-compos-e5eb21de-bucket/dags/football_dbt
+
+
+LEMBRAR DE APAGAR O ULTIMO BUCKET DO REPOSITORIO AO TERMINAR
 
 
 RASCUNHO ------------------------------------------------------

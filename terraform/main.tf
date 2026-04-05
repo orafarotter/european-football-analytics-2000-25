@@ -95,8 +95,10 @@ resource "google_composer_environment" "airflow" {
       image_version = var.composer_image_version
 
       pypi_packages = {
-        "kaggle" = "==2.0.0"
         "apache-airflow-providers-google" = "==19.0.0"
+        "dbt-bigquery"                    = "==1.11.0"
+        "dbt-core"                        = "==1.8.9"        
+        "kaggle"                          = "==2.0.0"       
       }
 
       env_variables = {

@@ -20,16 +20,16 @@ with european_matches as (
     select *
     from {{ ref('stg_matches') }}
     where division in (
-        'E0',   -- England:     Premier League
-        'SP1',  -- Spain:       La Liga
-        'I1',   -- Italy:       Serie A
-        'D1',   -- Germany:     Bundesliga
-        'F1',   -- France:      Ligue 1
-        'B1',   -- Belgium:     Pro League
-        'P1',   -- Portugal:    Primeira Liga
-        'E1',   -- England:     Championship        
-        'DEN',   -- Denmark:    Superliga
-        'POL',   -- Poland:     Ekstraklasa
+        'E0',   -- England:    Premier League
+        'SP1',  -- Spain:      La Liga
+        'I1',   -- Italy:      Serie A
+        'D1',   -- Germany:    Bundesliga
+        'F1',   -- France:     Ligue 1
+        'B1',   -- Belgium:    Pro League
+        'P1',   -- Portugal:   Primeira Liga
+        'E1',   -- England:    Championship        
+        'DEN',  -- Denmark:    Superliga
+        'POL'   -- Poland:     Ekstraklasa
     )
     and match_date     is not null
     and home_goals_ft  is not null
