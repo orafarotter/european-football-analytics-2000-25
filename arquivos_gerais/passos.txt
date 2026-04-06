@@ -1,30 +1,40 @@
-DATASET
+The dataset used in this project offers football match data from more than 30 leagues worldwide. The data spans from the 2000/01 season to the most recent results from the 2024/25 season. 
 https://www.kaggle.com/datasets/adamgbor/club-football-match-data-2000-2025
 
-PRINCIPAIS LIGAS
+Our objective is discover between the top 10 European leagues, based in Opta Power Rankings in 02/04/2026, which leagues have:
 https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-power-rankings
-Data 02/04/2026
+- 
+-
+-
+
+
+
+
+
 
 ----------------
 
 PRE REQUISITOS 
 
-1. Ter uma conta no Google Cloud, uma billing account e um projeto
-
-PROJECT_ID: euro-football-analytics-20-25
-Number: 532542106535
-
+1. Ter uma conta no Google Cloud, com uma billing account e um projeto habilitados.
 2. Ter o Terraform instalado
 https://developer.hashicorp.com/terraform/install
-
-
-3. Ter uma conta no Kaggle.
-Tenha seu username e token
-
+3. Ter uma conta no Kaggle para obter nome de usuário e token.
 Settings >> API Tokens >> Generate New Token
 
-USERNAME
-KEY
+
+The commands used below are intended for the Linux environment.
+
+Com base nos pré-requisitos, no seu terminal crie as variáveis:
+
+#Google Cloud Project ID
+export GCP_PROJECT_ID=your_gcp_project_id
+
+#Kaggle Username
+export KAGGLE_USERNAME=your_username
+
+#Kaggle API Token
+export KAGGLE_API_TOKEN=your_api_key
 
 ----------------
 
@@ -34,10 +44,11 @@ PASSOS
 
 git clone <URL>
 
-4. Acesse o arquivo terraform.tfvars.example em cd terraform/ e informe os valores das variáveis.
+4. Acesse o  arquivo terraform.tfvars.example em cd terraform/ e informe os valores das variáveis. Todas elas se referem ao Google Cloud como por exemplo: project_id
   4.1. informe os valores das variáveis 
-  4.2. Copie o valor de 'composer_env_name' e salve em uma variável no terminal, como: export COMPOSER_ENV_NAME=<nome>
-  4.3. Renomeie o arquivo para terraform.tfvars
+  4.2. Renomeie o arquivo para terraform.tfvars
+  4.3. Copie o valor de 'composer_env_name' e salve em uma variável no terminal: 
+    export COMPOSER_ENV_NAME=<nome>
 
 5. Autentique-se no GCP 
 
@@ -49,7 +60,7 @@ gcloud auth application-default login
 
   Caso não esteja...
 
-  gcloud config set project <PROJECT_ID>
+  gcloud config set project <GCP_PROJECT_ID>
 
 Depois execute:
 
@@ -63,9 +74,29 @@ terraform apply
 
 Aguarde até o ambiente ser provisionado (pegue um café).
 
-7. Dentro do GCP>IAM>Service Accounts, baixe a chave da conta de serviço que foi criada pelo Terraform
 
-8. dbt Cloud 
+--------------------------------------------------
+
+# Replace YOUR_PROJECT_ID with your actual project ID
+gcloud iam service-accounts keys create keys/gcp-service-account.json \
+    --iam-account=eu-football-pipeline-sa@YOUR_PROJECT_ID.iam.gserviceaccount.com
+
+
+# Set the Airflow user ID for Linux/Mac compatibility
+echo -e "AIRFLOW_UID=$(id -u)" > .env
+
+LEMBRAR DE ALTERAR O ARQUIVO PARA
+# Build the custom image and start the containers in detached mode
+docker-compose up --build -d
+
+---------------------------------------------------
+
+Ao final do deploy salve a URL da variável composer_airflow_uri = "https://fced157b3fb84ffbaaf3a91b8bb2e4d5-dot-us-east1.composer.googleusercontent.com"
+Usaremos na sequência.
+
+[TALVEZ NÃO] 7. Dentro do GCP>IAM>Service Accounts, baixe a chave da conta de serviço que foi criada pelo Terraform
+
+[TALVEZ NÃO] 8. dbt Cloud 
   1. Crie um projeto no dbt Cloud;
   2. Utilize a conta de serviço recém criada para fazer a conexão com o BigQuery
   3. Estabeleça conexão com seu repositório e aponte para pasta 'football_dbt'
@@ -143,28 +174,28 @@ export KAGGLE_API_TOKEN=your_api_key
 10. Faça o upload da DAG e das tasks para o Composer (talvez caiba um bash aqui)
 
 gcloud composer environments storage dags import \
-    --environment <COMPOSER_ENV_NAME> \ #look at terraform.tfvars
+    --environment $COMPOSER_ENV_NAME \
     --location us-east1 \
     --source dags/football_pipeline_dag.py
 
 gcloud composer environments storage dags import \
-    --environment <COMPOSER_ENV_NAME> \
+    --environment $COMPOSER_ENV_NAME \
     --location us-east1 \
     --source dags/scripts/
 
   10.1. Sete as variáveis do Kaggle no ambiente
 
-gcloud composer environments run $ENV_NAME \
+gcloud composer environments run $COMPOSER_ENV_NAME \
 	--location us-east1 \
 	variables set -- KAGGLE_USERNAME $KAGGLE_USERNAME
 
-gcloud composer environments run $ENV_NAME \
+gcloud composer environments run $COMPOSER_ENV_NAME \
 	--location us-east1 \
 	variables set -- KAGGLE_API_TOKEN $KAGGLE_API_TOKEN
 
-  10.2. Suba a biblioteca do Kaggle [ATENÇÃO: TALVEZ NÃO SEJA NECESSÁRIO]
+  10.2. Suba a biblioteca do Kaggle 
 
-gcloud composer environments update $ENV_NAME \
+gcloud composer environments update $COMPOSER_ENV_NAME \
     --location us-east1 \
     --update-pypi-packages-from-file requirements.txt
 

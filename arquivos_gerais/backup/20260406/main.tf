@@ -81,3 +81,66 @@ resource "google_bigquery_dataset" "datasets" {
     environment = "production"
   }
 }
+
+# ===========================
+# CLOUD COMPOSER ENVIRONMENT 
+# ===========================
+
+resource "google_composer_environment" "airflow" {
+  name   = var.composer_env_name
+  region = var.region
+
+  config {
+    software_config {
+      image_version = var.composer_image_version
+
+      pypi_packages = {
+        "apache-airflow-providers-google" = "==19.0.0"
+        "dbt-bigquery"                    = "==1.11.0"
+        "dbt-core"                        = "==1.10.0"        
+        "kaggle"                          = "==2.0.0"       
+      }
+
+      env_variables = {
+        PIPELINE_BUCKET = var.bucket_name
+        PIPELINE_PROJECT = var.project_id
+        PIPELINE_RAW_DS  = "eu_football_raw"
+        PIPELINE_STG_DS  = "eu_football_staging"
+        PIPELINE_MART_DS = "eu_football_mart"
+      }
+    }
+
+    workloads_config {
+      scheduler {
+        cpu        = 0.5
+        memory_gb  = 2
+        storage_gb = 1
+        count      = 1
+      }
+      web_server {
+        cpu        = 0.5
+        memory_gb  = 2
+        storage_gb = 1
+      }
+      worker {
+        cpu        = 0.5
+        memory_gb  = 2
+        storage_gb = 1
+        min_count  = 1
+        max_count  = 3
+      }
+    }
+
+    environment_size = "ENVIRONMENT_SIZE_SMALL"
+
+    node_config {
+      service_account = google_service_account.pipeline_sa.email
+    }
+  }
+
+  depends_on = [
+    google_project_service.apis,
+    google_project_iam_member.pipeline_sa_roles,
+    google_storage_bucket.data_lake    
+  ]
+}

@@ -1,1 +1,2 @@
+apache-airflow-providers-google==19.0.0
 kaggle==2.0.0

@@ -79,31 +79,30 @@ enriched as (
         away_red_cards,
 
         -- Calculated metrics
-        home_goals_ft + away_goals_ft                   as total_goals,
+        (home_goals_ft + away_goals_ft)                 as total_goals,
 
         case full_time_result
             when 'H' then 'Home Win'
             when 'A' then 'Away Win'
             when 'D' then 'Draw'
+            else 'Unknown'
         end                                             as match_result_label,
 
-        case 
-            when home_goals_ft > away_goals_ft then home_goals_ft - away_goals_ft
-            when away_goals_ft > home_goals_ft then away_goals_ft - home_goals_ft
-            else 0
-        end                                             as goal_difference,
+        abs(home_goals_ft - away_goals_ft)              as goal_difference,
 
+        -- FIX: Handling NULL values for half-time goals to avoid silent calculation errors
         case 
-            when (home_goals_ht + away_goals_ht)>0 and (home_goals_ht + away_goals_ht) = (home_goals_ft + away_goals_ft) then 'All Goals in First Half'
-            when (home_goals_ht + away_goals_ht)=0 and (home_goals_ft + away_goals_ft)>0 then 'All Goals in Second Half'
-            when (home_goals_ht + away_goals_ht)=0 and (home_goals_ft + away_goals_ft)=0 then 'No Goals'
+            when home_goals_ht is null or away_goals_ht is null then 'Data Unavailable'
+            when (home_goals_ht + away_goals_ht) > 0 and (home_goals_ht + away_goals_ht) = (home_goals_ft + away_goals_ft) then 'All Goals in First Half'
+            when (home_goals_ht + away_goals_ht) = 0 and (home_goals_ft + away_goals_ft) > 0 then 'All Goals in Second Half'
+            when (home_goals_ft + away_goals_ft) = 0 then 'No Goals'
             else 'Goals in Both Halves'
         end                                             as goal_timing,                     
 
         case
-            when home_goals_ft + away_goals_ft = 0 then 'Goalless'
-            when home_goals_ft + away_goals_ft <= 2 then 'Low Scoring'
-            when home_goals_ft + away_goals_ft <= 4 then 'Normal'
+            when (home_goals_ft + away_goals_ft) = 0 then 'Goalless'
+            when (home_goals_ft + away_goals_ft) <= 2 then 'Low Scoring'
+            when (home_goals_ft + away_goals_ft) <= 4 then 'Normal'
             else 'High Scoring'
         end                                             as scoring_category
 

@@ -7,3 +7,11 @@ terraform/terraform.tfvars
 crash.log
 
 ./venv/
+
+
+# GCP Service Account Keys
+keys/*.json
+
+
+# Docker environment variables
+.env

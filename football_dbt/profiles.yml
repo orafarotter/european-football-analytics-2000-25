@@ -1,40 +1,35 @@
 # profiles.yml — dbt connection profiles for the EU Football Analytics project.
 #
-# HOW AUTHENTICATION WORKS IN CLOUD COMPOSER:
-# Cloud Composer workers automatically inherit the IAM permissions of the
-# Service Account attached to the Composer environment. When `method` is set
-# to `oauth`, dbt-bigquery uses Application Default Credentials (ADC), which
-# picks up those permissions without requiring any key file.
+# HOW TO AUTHENTICATE LOCALLY:
+# This project uses Application Default Credentials (ADC) via OAuth.
+# Before running dbt commands, open your terminal and run:
 #
-# For local development, run:
 #   gcloud auth application-default login
-# before running `dbt run`, and ADC will use your personal Google account.
 #
-# Reference: https://docs.getdbt.com/docs/core/connect-data-platform/bigquery-setup
+# Set the GCP_PROJECT_ID environment variable in your terminal to your target GCP project:
+#   export GCP_PROJECT_ID="your-project-id" (Linux/macOS)
+#   set GCP_PROJECT_ID="your-project-id"    (Windows CMD)
 
 football_dbt:
   outputs:
-
-    # ── Production target (used by Cloud Composer) ───────────────────────────
-    prod:
+    dev:
       type: bigquery
-      method: oauth                     # uses Application Default Credentials (ADC)
-      project: "{{ env_var('PIPELINE_PROJECT') }}"  # GCP project ID from Composer env var
-      dataset: eu_football_staging      # default dataset; individual models can override
-      location: US                      # must match the BigQuery dataset location
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT_ID') }}" 
+      dataset: eu_football_dev          
+      location: US
       threads: 4
       timeout_seconds: 300
       priority: interactive
 
-    # ── Development target (used by developers running dbt locally) ───────────
-    dev:
+    prod:
       type: bigquery
-      method: oauth                     # run `gcloud auth application-default login` first
-      project: "{{ env_var('PIPELINE_PROJECT') }}"
-      dataset: eu_football_dev          # isolated dev dataset — does not touch prod tables
+      method: oauth
+      project: "{{ env_var('GCP_PROJECT_ID') }}"
+      dataset: eu_football_mart      
       location: US
-      threads: 2
+      threads: 4
       timeout_seconds: 300
       priority: interactive
 
-  target: prod   # default target — can be overridden with `dbt run --target dev`
+  target: dev
