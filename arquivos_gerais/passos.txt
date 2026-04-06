@@ -7,18 +7,15 @@ https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-pow
 -
 -
 
-
-
-
-
-
 ----------------
 
 PRE REQUISITOS 
 
 1. Ter uma conta no Google Cloud, com uma billing account e um projeto habilitados.
+
 2. Ter o Terraform instalado
 https://developer.hashicorp.com/terraform/install
+
 3. Ter uma conta no Kaggle para obter nome de usuário e token.
 Settings >> API Tokens >> Generate New Token
 
