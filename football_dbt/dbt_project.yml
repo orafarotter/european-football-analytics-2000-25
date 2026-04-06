@@ -14,20 +14,26 @@ clean-targets:
   - "target"
   - "dbt_packages"
 
+# IMPORTANT: the custom schema names below (eu_football_staging, eu_football_mart)
+# are used as the final BigQuery dataset names ONLY because the macro
+# macros/generate_schema_name.sql overrides dbt's default behaviour.
+# Without that macro, dbt would generate names like "<target_schema>_eu_football_staging",
+# which would NOT match the datasets created by Terraform.
+
 models:
   football_dbt:
     staging:
       +materialized: view
-      +schema: eu_football_staging   # maps to BigQuery dataset created by Terraform
+      +schema: eu_football_staging    # final dataset: eu_football_staging (via generate_schema_name macro)
 
     mart:
       +materialized: table
-      +schema: eu_football_mart      # maps to BigQuery dataset created by Terraform
+      +schema: eu_football_mart       # final dataset: eu_football_mart (via generate_schema_name macro)
 
 seeds:
   football_dbt:
     leagues:
-      +schema: eu_football_raw       # seed lands in the raw schema alongside the external table
+      +schema: eu_football_raw        # seed lands in the raw dataset alongside the external table
       +column_types:
         code:        string
         country:     string

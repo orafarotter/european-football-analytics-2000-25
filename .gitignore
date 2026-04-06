@@ -1,17 +1,44 @@
-# Terraform
+# ── Credentials & secrets ────────────────────────────────────────────────────
+credentials/
+*.json
+.env
+*.tfvars
+!terraform.tfvars.example
+!.env.example
+
+# ── Terraform ────────────────────────────────────────────────────────────────
 .terraform/
 .terraform.lock.hcl
-*.tfstate
-*.tfstate.backup
-terraform/terraform.tfvars
-crash.log
+terraform.tfstate
+terraform.tfstate.backup
+*.tfplan
 
-./venv/
+# ── dbt ──────────────────────────────────────────────────────────────────────
+football_dbt/target/
+football_dbt/dbt_packages/
+football_dbt/logs/
 
+# ── Python ───────────────────────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
 
-# GCP Service Account Keys
-keys/*.json
+# ── Airflow ──────────────────────────────────────────────────────────────────
+logs/
+airflow.db
 
+# ── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db
 
-# Docker environment variables
-.env
+# ── Editors ──────────────────────────────────────────────────────────────────
+.vscode/
+.idea/
+*.swp

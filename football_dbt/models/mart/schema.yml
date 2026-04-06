@@ -6,7 +6,7 @@ models:
       Fact table with European football matches from the top 10 leagues (2000–2025).
       Partitioned by match_date (year granularity) and clustered by division and
       league_name to optimize query performance in BigQuery and Looker Studio.
-      Includes the following calculated columns: total_goals, match_result_label, goal_difference, 
+      Includes calculated columns: total_goals, match_result_label, goal_difference,
       goal_timing and scoring_category.
 
     columns:
@@ -50,7 +50,7 @@ models:
         description: "Full-time result as a readable label"
         tests:
           - accepted_values:
-              values: ['Home Win', 'Away Win', 'Draw', 'Unknown']
+              values: ['Home Win', 'Away Win', 'Draw']
 
       - name: goal_difference
         description: "Absolute difference in goals between home and away teams"
@@ -58,10 +58,18 @@ models:
           - not_null
 
       - name: goal_timing
-        description: "Timing of goals scored in the match"
+        description: >
+          Timing pattern of goals in the match.
+          'Data Unavailable' is expected for matches where half-time scores
+          were not recorded (common in older seasons and smaller leagues).
         tests:
           - accepted_values:
-              values: ['No Goals', 'All Goals in First Half', 'All Goals in Second Half', 'Goals in Both Halves', 'Data Unavailable']
+              values:
+                - 'No Goals'
+                - 'All Goals in First Half'
+                - 'All Goals in Second Half'
+                - 'Goals in Both Halves'
+                - 'Data Unavailable'
 
       - name: scoring_category
         description: "Match classified by total goals: Goalless / Low Scoring / Normal / High Scoring"

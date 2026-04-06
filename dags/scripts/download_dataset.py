@@ -2,12 +2,16 @@
 download_dataset.py — Downloads the Club Football Match Data (2000-2025) from Kaggle.
 
 This script is called by the Airflow DAG (download_csv task).
-Kaggle credentials are read from environment variables to avoid
-storing sensitive files in the repository or the Composer environment.
+Kaggle credentials are read from Airflow Variables to avoid storing
+sensitive data in the repository.
 
-Usage (local):
-    export KAGGLE_USERNAME=your_username
-    export KAGGLE_API_TOKEN=your_api_key
+Airflow Variables required:
+    KAGGLE_USERNAME  : Kaggle account username
+    KAGGLE_API_TOKEN : Kaggle API key
+
+The kaggle library expects these specific environment variable names:
+    KAGGLE_USERNAME  → set directly from the Airflow Variable
+    KAGGLE_KEY       → set from the KAGGLE_API_TOKEN Airflow Variable
 """
 
 import os
@@ -32,9 +36,22 @@ logger = logging.getLogger(__name__)
 # ── Helpers ───────────────────────────────────────────────────────────────────
 
 def _load_kaggle_credentials() -> None:
+    """
+    Load Kaggle credentials from Airflow Variables into environment variables.
+
+    The kaggle library authenticates using:
+        KAGGLE_USERNAME — account username
+        KAGGLE_KEY      — API token (note: the env var name is KAGGLE_KEY,
+                          not KAGGLE_API_TOKEN; the Airflow Variable is stored
+                          as KAGGLE_API_TOKEN for clarity but mapped here)
+    """
     from airflow.models import Variable
+
     os.environ["KAGGLE_USERNAME"] = Variable.get("KAGGLE_USERNAME")
+    # The kaggle library expects KAGGLE_KEY specifically — not KAGGLE_API_TOKEN
     os.environ["KAGGLE_KEY"] = Variable.get("KAGGLE_API_TOKEN")
+
+    logger.info("Kaggle credentials loaded from Airflow Variables.")
 
 
 def _prepare_download_dir(path: Path) -> None:
@@ -53,7 +70,6 @@ def download_dataset() -> str:
         str: Absolute path to the downloaded CSV file.
 
     Raises:
-        EnvironmentError: If Kaggle credentials are missing.
         FileNotFoundError: If the expected CSV file is not found after download.
     """
     _load_kaggle_credentials()
@@ -64,7 +80,6 @@ def download_dataset() -> str:
 
     logger.info("Starting download of dataset: %s", KAGGLE_DATASET)
 
-    # kaggle.api authenticates automatically from KAGGLE_USERNAME / KAGGLE_API_TOKEN env vars
     kaggle.api.authenticate()
     kaggle.api.dataset_download_files(
         dataset=KAGGLE_DATASET,
@@ -79,10 +94,8 @@ def download_dataset() -> str:
             unwanted.unlink()
             logger.info("Removed unwanted file: %s", unwanted.name)
 
-    # Locate the downloaded CSV
     csv_path = LOCAL_DOWNLOAD_DIR / EXPECTED_FILENAME
     if not csv_path.exists():
-        # List what was actually downloaded to help diagnose naming changes
         downloaded = list(LOCAL_DOWNLOAD_DIR.iterdir())
         raise FileNotFoundError(
             f"Expected file '{EXPECTED_FILENAME}' not found in {LOCAL_DOWNLOAD_DIR}. "

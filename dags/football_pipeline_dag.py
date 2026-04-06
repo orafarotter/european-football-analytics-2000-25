@@ -2,18 +2,21 @@
 football_pipeline_dag.py — Airflow DAG for the EU Football Analytics pipeline.
 
 Pipeline flow:
-    download_csv >> upload_to_gcs >> create_external_table >> dbt_run
+    download_csv >> upload_to_gcs >> create_external_table >> run_dbt
 
-This DAG runs dbt Core locally inside the Composer environment using BashOperator.
-No dbt Cloud account or API token is required. Authentication to BigQuery is handled
-automatically via the Composer environment's attached Service Account.
+Authentication to GCP is handled via Application Default Credentials (ADC),
+mounted into the container via the GOOGLE_APPLICATION_CREDENTIALS env variable.
 
-Environment variables (set via Composer env_variables in Terraform):
+Airflow Variables required (set via UI or environment):
+    KAGGLE_USERNAME   : Kaggle account username
+    KAGGLE_API_TOKEN  : Kaggle API key
+
+Environment variables (set in docker-compose.yml or .env):
     PIPELINE_BUCKET   : GCS bucket name
     PIPELINE_PROJECT  : GCP project ID
     PIPELINE_RAW_DS   : BigQuery raw dataset ID
-    DBT_PROJECT_DIR   : Absolute path to the dbt project inside the Composer worker
-                        Default: /home/airflow/gcs/dags/football_dbt
+    DBT_PROJECT_DIR   : Absolute path to the dbt project inside the container
+                        Default: /opt/airflow/dbt
 """
 
 from __future__ import annotations
@@ -24,8 +27,11 @@ from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.python import PythonOperator
+from airflow.operators.bash import BashOperator
 
-# Import pipeline scripts
+# Import pipeline task functions
+# These modules are importable because PYTHONPATH includes /opt/airflow/dags
+# (set via PYTHONPATH in docker-compose.yml)
 from scripts.download_dataset import download_dataset
 from scripts.upload_to_gcs import upload_to_gcs
 from scripts.create_external_table import create_external_table
@@ -36,10 +42,7 @@ logger = logging.getLogger(__name__)
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
-# Environment variables injected via Terraform/Composer
-PIPELINE_BUCKET = os.getenv("PIPELINE_BUCKET", "default-bucket-name")
-PIPELINE_PROJECT = os.getenv("PIPELINE_PROJECT", "default-project-id")
-PIPELINE_RAW_DS = os.getenv("PIPELINE_RAW_DS", "eu_football_raw")
+DBT_PROJECT_DIR = os.getenv("DBT_PROJECT_DIR", "/opt/airflow/dbt")
 
 # ── Default arguments ─────────────────────────────────────────────────────────
 
@@ -47,7 +50,10 @@ default_args = {
     "owner": "data_engineering_team",
     "depends_on_past": False,
     "retries": 1,
-    "retry_delay": timedelta(minutes=5)
+    "retry_delay": timedelta(minutes=5),
+    "on_failure_callback": lambda context: logger.error(
+        "Task failed: %s", context.get("task_instance_key_str")
+    ),
 }
 
 # ── DAG definition ────────────────────────────────────────────────────────────
@@ -55,11 +61,11 @@ default_args = {
 with DAG(
     dag_id="football_pipeline",
     default_args=default_args,
-    description="End-to-end pipeline: Kaggle → GCS → BigQuery",
-    schedule_interval="@weekly",
+    description="End-to-end pipeline: Kaggle → GCS → BigQuery (external table) → dbt",
+    schedule="@weekly",  # 'schedule_interval' is deprecated in Airflow 2.4+
     start_date=datetime(2025, 1, 1),
     catchup=False,
-    tags=["football", "etl", "ingestion"],
+    tags=["football", "etl", "ingestion", "dbt"],
 ) as dag:
 
     t1_download = PythonOperator(
@@ -77,5 +83,19 @@ with DAG(
         python_callable=create_external_table,
     )
 
+    # Runs: dbt deps → dbt seed → dbt run → dbt test
+    # dbt reads profiles.yml from DBT_PROJECT_DIR and connects to BigQuery via ADC.
+    t4_dbt_run = BashOperator(
+        task_id="run_dbt",
+        bash_command=(
+            "cd {{ params.dbt_dir }} && "
+            "dbt deps && "
+            "dbt seed --profiles-dir . && "
+            "dbt run --profiles-dir . && "
+            "dbt test --profiles-dir ."
+        ),
+        params={"dbt_dir": DBT_PROJECT_DIR},
+    )
+
     # ── Task dependencies ─────────────────────────────────────────────────────
-    t1_download >> t2_upload >> t3_external_table
+    t1_download >> t2_upload >> t3_external_table >> t4_dbt_run

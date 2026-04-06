@@ -3,6 +3,12 @@ create_external_table.py — Creates (or recreates) a BigQuery external table
 pointing to the raw Matches.csv file in GCS.
 
 This script is called by the Airflow DAG (create_external_table task).
+Authentication is handled via Application Default Credentials (ADC).
+
+Environment variables (set in docker-compose.yml or .env):
+    PIPELINE_PROJECT : GCP project ID
+    PIPELINE_RAW_DS  : BigQuery raw dataset ID
+    PIPELINE_BUCKET  : GCS bucket name
 """
 
 import os
@@ -12,9 +18,9 @@ import logging
 
 PROJECT_ID = os.environ.get(
     "PIPELINE_PROJECT", "euro-football-analytics-20-25")
-DATASET_ID = os.environ.get("PIPELINE_RAW_DS", "eu_football_raw")
+DATASET_ID = os.environ.get("PIPELINE_RAW_DS",  "eu_football_raw")
 TABLE_ID = "raw_matches"
-BUCKET_NAME = os.environ.get("PIPELINE_BUCKET", "eu-football-raw-20-25")
+BUCKET_NAME = os.environ.get("PIPELINE_BUCKET",  "eu-football-raw-20-25")
 GCS_URI = f"gs://{BUCKET_NAME}/raw/Matches.csv"
 
 # ── Logging ───────────────────────────────────────────────────────────────────
@@ -25,19 +31,14 @@ logging.basicConfig(
 )
 logger = logging.getLogger(__name__)
 
-# ── Main ──────────────────────────────────────────────────────────────────────
+# ── Schema ────────────────────────────────────────────────────────────────────
 
-def create_external_table() -> None:
-    """
-    Create (or recreate) a BigQuery external table over the raw GCS CSV file.
 
-    The table is always recreated (if_exists_action=REPLACE) to ensure the
-    schema and GCS URI are always in sync with this script.
-    """
-    from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
+def _build_schema():
+    """Return the explicit BigQuery schema for the raw Matches CSV."""
     from google.cloud import bigquery
 
-    SCHEMA = [
+    return [
         bigquery.SchemaField("Division",    "STRING"),
         bigquery.SchemaField("MatchDate",   "STRING"),
         bigquery.SchemaField("MatchTime",   "STRING"),
@@ -88,25 +89,42 @@ def create_external_table() -> None:
         bigquery.SchemaField("C_PHB",       "FLOAT64"),
     ]
 
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+def create_external_table() -> None:
+    """
+    Create (or recreate) a BigQuery external table over the raw GCS CSV file.
+
+    The table is always deleted and recreated to ensure the schema and GCS URI
+    remain in sync with this script (idempotent operation).
+    """
+    from airflow.providers.google.cloud.hooks.bigquery import BigQueryHook
+    from google.cloud import bigquery
+
+    schema = _build_schema()
+
     hook = BigQueryHook()
-    client = hook.get_client()
+    # Pass project_id explicitly to avoid relying on environment inference,
+    # which can be unreliable in local Docker setups with ADC.
+    client = hook.get_client(project_id=PROJECT_ID)
 
     table_ref = f"{PROJECT_ID}.{DATASET_ID}.{TABLE_ID}"
 
     external_config = bigquery.ExternalConfig("CSV")
     external_config.source_uris = [GCS_URI]
-    external_config.schema = SCHEMA
-    external_config.options.skip_leading_rows = 1      # skip header row
+    external_config.schema = schema
+    external_config.options.skip_leading_rows = 1
     external_config.options.allow_quoted_newlines = True
     external_config.options.allow_jagged_rows = False
 
-    table = bigquery.Table(table_ref, schema=SCHEMA)
+    table = bigquery.Table(table_ref, schema=schema)
     table.external_data_configuration = external_config
 
     logger.info("Creating external table: %s", table_ref)
     logger.info("Pointing to: %s", GCS_URI)
 
-    # WRITE_TRUNCATE equivalent for external tables: delete and recreate
+    # Delete if exists, then recreate — equivalent to WRITE_TRUNCATE for external tables
     client.delete_table(table_ref, not_found_ok=True)
     client.create_table(table)
 
