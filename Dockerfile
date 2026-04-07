@@ -17,7 +17,9 @@ USER root
 # Switch back to the airflow user for pip installs (security best practice)
 USER airflow
 
-# Copy the requirements file and install Python dependencies
 COPY requirements.txt /requirements.txt
 
-RUN pip install --no-cache-dir -r /requirements.txt
+RUN curl -L "https://raw.githubusercontent.com/apache/airflow/constraints-2.10.5/constraints-3.11.txt" \
+    | grep -v "protobuf==" > /tmp/constraints.txt && \
+    pip install --no-cache-dir "protobuf>=5.0.0,<6.0.0" "dbt-core==1.8.9" "dbt-bigquery==1.8.2" && \
+    pip install --no-cache-dir --constraint /tmp/constraints.txt -r /requirements.txt
