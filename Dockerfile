@@ -1,25 +1,37 @@
-# Dockerfile — Custom Airflow image for the EU Football Analytics pipeline.
-#
-# Base: official Apache Airflow 2.10.5 image (matches the version used in the project).
-# Adds: dbt-core, dbt-bigquery, kaggle, and the Google provider for Airflow.
-#
-# Build: docker compose build
-# The image is built automatically by docker compose up --build.
+FROM apache/airflow:2.9.1
 
-FROM apache/airflow:2.10.5-python3.11
+COPY requirements.txt  ./
 
-# Switch to root to install system dependencies (if any are needed in the future)
-USER root
+USER airflow
+RUN python -m virtualenv dbt_venv && source dbt_venv/bin/activate
+# Install Apache Airflow and other dependencies
+RUN pip install apache-airflow==${AIRFLOW_VERSION} && \
+    pip install -r requirements.txt
 
-# Install any OS-level dependencies here if needed
-# (none required for this project at this time)
 
-# Switch back to the airflow user for pip installs (security best practice)
+# Base image
+FROM apache/airflow:2.7.1
+
+ENV AIRFLOW_HOME=/opt/airflow
+
+# Switch to the airflow user
 USER airflow
 
-COPY requirements.txt /requirements.txt
+# Upgrade pip
+RUN pip install --upgrade pip
 
-RUN curl -L "https://raw.githubusercontent.com/apache/airflow/constraints-2.10.5/constraints-3.11.txt" \
-    | grep -v "protobuf==" > /tmp/constraints.txt && \
-    pip install --no-cache-dir "protobuf>=5.0.0,<6.0.0" "dbt-core==1.8.9" "dbt-bigquery==1.8.2" && \
-    pip install --no-cache-dir --constraint /tmp/constraints.txt -r /requirements.txt
+# Copy the requirements file into the container and package dependencies
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+
+# Add dbt to PATH
+ENV PATH="/root/.local/bin:${PATH}"
+
+SHELL ["/bin/bash", "-o", "pipefail", "-e", "-u", "-x", "-c"]
+
+WORKDIR $AIRFLOW_HOME
+
+COPY scripts scripts
+
+USER $AIRFLOW_UID
