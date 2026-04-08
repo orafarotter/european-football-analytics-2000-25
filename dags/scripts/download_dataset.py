@@ -7,11 +7,11 @@ sensitive data in the repository.
 
 Airflow Variables required:
     KAGGLE_USERNAME  : Kaggle account username
-    KAGGLE_API_TOKEN : Kaggle API key
+    KAGGLE_KEY : Kaggle API key
 
 The kaggle library expects these specific environment variable names:
     KAGGLE_USERNAME  → set directly from the Airflow Variable
-    KAGGLE_KEY       → set from the KAGGLE_API_TOKEN Airflow Variable
+    KAGGLE_KEY       → set from the KAGGLE_KEY Airflow Variable
 """
 
 import os
@@ -41,15 +41,12 @@ def _load_kaggle_credentials() -> None:
 
     The kaggle library authenticates using:
         KAGGLE_USERNAME — account username
-        KAGGLE_KEY      — API token (note: the env var name is KAGGLE_KEY,
-                          not KAGGLE_API_TOKEN; the Airflow Variable is stored
-                          as KAGGLE_API_TOKEN for clarity but mapped here)
+        KAGGLE_KEY      — API token 
     """
     from airflow.models import Variable
 
     os.environ["KAGGLE_USERNAME"] = Variable.get("KAGGLE_USERNAME")
-    # The kaggle library expects KAGGLE_KEY specifically — not KAGGLE_API_TOKEN
-    os.environ["KAGGLE_KEY"] = Variable.get("KAGGLE_API_TOKEN")
+    os.environ["KAGGLE_KEY"] = Variable.get("KAGGLE_KEY")
 
     logger.info("Kaggle credentials loaded from Airflow Variables.")
 
