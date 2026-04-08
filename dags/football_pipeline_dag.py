@@ -42,7 +42,7 @@ logger = logging.getLogger(__name__)
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
-DBT_PROJECT_DIR = os.getenv("DBT_PROJECT_DIR", "/opt/airflow/dbt")
+DBT_PROJECT_DIR = os.getenv("DBT_PROJECT_DIR", "/opt/airflow/football_dbt")
 
 # ── Default arguments ─────────────────────────────────────────────────────────
 
@@ -83,16 +83,14 @@ with DAG(
         python_callable=create_external_table,
     )
 
-    # Runs: dbt deps → dbt seed → dbt run → dbt test
-    # dbt reads profiles.yml from DBT_PROJECT_DIR and connects to BigQuery via ADC.
     t4_dbt_run = BashOperator(
         task_id="run_dbt",
+        append_env=True,
         bash_command=(
-            "cd {{ params.dbt_dir }} && "
-            "dbt deps && "
-            "dbt seed --profiles-dir . && "
-            "dbt run --profiles-dir . && "
-            "dbt test --profiles-dir ."
+            "dbt deps --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }} && "
+            "dbt seed --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }} && "
+            "dbt run --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }} && "
+            "dbt test --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }}"
         ),
         params={"dbt_dir": DBT_PROJECT_DIR},
     )
