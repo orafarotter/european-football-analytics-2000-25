@@ -19,6 +19,10 @@ https://developer.hashicorp.com/terraform/install
 3. Ter uma conta no Kaggle para obter nome de usuário e token.
 Settings >> API Tokens >> Generate New Token
 
+[AVALIAR] 4. Ter o Docker instalado 
+
+
+
 
 The commands used below are intended for the Linux environment.
 
@@ -32,6 +36,12 @@ export KAGGLE_USERNAME=your_username
 
 #Kaggle API Token
 export KAGGLE_API_TOKEN=your_api_key
+
+
+cp .env.example .env   # preencher as variáveis
+docker compose build   # primeira vez — usa o cache a partir daqui
+docker compose up airflow-init   # migra o banco + cria admin
+docker compose up -d
 
 ----------------
 
