@@ -1,37 +1,30 @@
-FROM apache/airflow:2.9.1
+# syntax=docker/dockerfile:1
+# ---------------------------------------------------------------------------
+# Base image: official Airflow 2.10.5 on Python 3.11
+# We install project dependencies here so the pip layer is cached by Docker
+# and does NOT re-run on every `docker compose up`.
+# ---------------------------------------------------------------------------
+FROM apache/airflow:2.7.2
 
-COPY requirements.txt  ./
 
+# Switch to root only to install OS-level deps (none needed here, but kept
+# as a placeholder so future additions don't break the USER directive order)
+USER root
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        build-essential \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Switch back to the airflow user before any pip operations
 USER airflow
-RUN python -m virtualenv dbt_venv && source dbt_venv/bin/activate
-# Install Apache Airflow and other dependencies
-RUN pip install apache-airflow==${AIRFLOW_VERSION} && \
-    pip install -r requirements.txt
 
+# Copy requirements first — Docker caches this layer until the file changes,
+# so rebuilds caused only by DAG edits won't re-run pip install.
+COPY requirements.txt /requirements.txt
 
-# Base image
-FROM apache/airflow:2.7.1
-
-ENV AIRFLOW_HOME=/opt/airflow
-
-# Switch to the airflow user
-USER airflow
-
-# Upgrade pip
-RUN pip install --upgrade pip
-
-# Copy the requirements file into the container and package dependencies
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-
-
-# Add dbt to PATH
-ENV PATH="/root/.local/bin:${PATH}"
-
-SHELL ["/bin/bash", "-o", "pipefail", "-e", "-u", "-x", "-c"]
-
-WORKDIR $AIRFLOW_HOME
-
-COPY scripts scripts
-
-USER $AIRFLOW_UID
+# Install project dependencies.
+# No constraint file needed — the base image already ships Airflow
+# with its dependencies locked; pip resolves the remaining packages freely.
+RUN pip install --no-cache-dir -r /requirements.txt
