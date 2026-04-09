@@ -11,6 +11,9 @@ docker compose exec airflow-scheduler airflow variables set GCP_PROJECT_ID "${GC
 docker compose exec airflow-scheduler airflow variables set GCS_BUCKET "${GCS_BUCKET}"
 
 echo "▶ Setting Airflow GCP Connection..."
+
+docker compose exec airflow-scheduler airflow connections delete google_cloud_default || true
+
 docker compose exec airflow-scheduler airflow connections add google_cloud_default \
     --conn-type google_cloud_platform \
     --conn-extra '{"key_path": "/opt/airflow/credentials/pipeline-sa-key.json", "scope": "https://www.googleapis.com/auth/cloud-platform", "project": "'"${GCP_PROJECT_ID}"'"}'

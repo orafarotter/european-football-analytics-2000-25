@@ -43,6 +43,7 @@ logger = logging.getLogger(__name__)
 # ── Configuration ─────────────────────────────────────────────────────────────
 
 DBT_PROJECT_DIR = os.getenv("DBT_PROJECT_DIR", "/opt/airflow/football_dbt")
+DBT_BIN = "/home/airflow/.local/bin/dbt"
 
 # ── Default arguments ─────────────────────────────────────────────────────────
 
@@ -87,12 +88,15 @@ with DAG(
         task_id="run_dbt",
         append_env=True,
         bash_command=(
-            "dbt deps --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }} && "
-            "dbt seed --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }} && "
-            "dbt run --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }} && "
-            "dbt test --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }}"
+            "{{ params.dbt_bin }} deps  --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }} && "
+            "{{ params.dbt_bin }} seed  --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }} && "
+            "{{ params.dbt_bin }} run   --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }} && "
+            "{{ params.dbt_bin }} test  --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }}"
         ),
-        params={"dbt_dir": DBT_PROJECT_DIR},
+        params={
+            "dbt_dir": DBT_PROJECT_DIR,
+            "dbt_bin": DBT_BIN,
+        },
     )
 
     # ── Task dependencies ─────────────────────────────────────────────────────
