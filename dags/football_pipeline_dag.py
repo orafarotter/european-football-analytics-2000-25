@@ -88,16 +88,24 @@ with DAG(
         task_id="run_dbt",
         append_env=True,
         bash_command=(
-            "{{ params.dbt_bin }} deps  --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }} && "
-            "{{ params.dbt_bin }} seed  --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }} && "
-            "{{ params.dbt_bin }} run   --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }} && "
-            "{{ params.dbt_bin }} test  --project-dir {{ params.dbt_dir }} --profiles-dir {{ params.dbt_dir }}"
+            # 1. Clear any previous tmp folder to avoid conflicts
+            "rm -rf /tmp/dbt_project && "
+            # 2. Copy the entire dbt project to the writable /tmp directory
+            "cp -R {{ params.dbt_dir }} /tmp/dbt_project && "
+            # 3. Execute all dbt commands pointing to the new /tmp location
+            "{{ params.dbt_bin }} deps  --project-dir /tmp/dbt_project --profiles-dir /tmp/dbt_project && "
+            "{{ params.dbt_bin }} seed  --project-dir /tmp/dbt_project --profiles-dir /tmp/dbt_project && "
+            "{{ params.dbt_bin }} run   --project-dir /tmp/dbt_project --profiles-dir /tmp/dbt_project && "
+            "{{ params.dbt_bin }} test  --project-dir /tmp/dbt_project --profiles-dir /tmp/dbt_project && "
+            # 4. Clean up after successful execution
+            "rm -rf /tmp/dbt_project"
         ),
         params={
             "dbt_dir": DBT_PROJECT_DIR,
             "dbt_bin": DBT_BIN,
         },
     )
+
 
     # ── Task dependencies ─────────────────────────────────────────────────────
     t1_download >> t2_upload >> t3_external_table >> t4_dbt_run

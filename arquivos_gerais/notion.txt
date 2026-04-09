@@ -10,3 +10,17 @@ dbt deps
 para achar as configurações no dbt cloud ui...
 clica no SET UP CLI no cantoesquerdo inferior
 dai um menu irá aparecer
+
+
+
+--------------------------------------------
+
+Erro de PATH no dbt (Exit code 2): O Airflow não encontrava o executável do dbt no container. Solução: Parametrizamos o caminho absoluto (/home/airflow/.local/bin/dbt) diretamente na DAG.
+
+Permissão negada na Service Account: A task upload_to_gcs não conseguia ler a chave JSON mapeada no Docker. Solução: Executamos chmod 644 no arquivo localmente (host) para liberar a leitura.
+
+Falha de compilação por variáveis: O profiles.yml buscava uma variável de ambiente diferente da definida, quebrando o dbt antes de rodar. Solução: Fixamos o ID do projeto e o caminho da credencial diretamente no perfil.
+
+Bloqueio de escrita de logs/target: O dbt não tinha permissão para gravar os arquivos compilados na pasta mapeada do host. Solução: Alteramos a DAG para copiar o projeto para a pasta /tmp (livre para escrita), rodar de lá e apagar depois.
+
+Erro 400 no BigQuery (Location Mismatch): O dbt seed falhou pois tentava carregar dados na região global (US) contra um dataset criado na Carolina do Sul. Solução: Ajustamos o parâmetro location no profiles.yml estritamente para us-east1.

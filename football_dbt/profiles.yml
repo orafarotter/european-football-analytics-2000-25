@@ -26,8 +26,8 @@ football_dbt:
       method: service-account
       project: "{{ env_var('GCP_PROJECT_ID') }}"
       keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
-      dataset: eu_football_mart       # dev writes to the same datasets as prod
-      location: US                    # (project is small; no separate dev environment needed)
+      dataset: eu_football_mart                   # dev writes to the same datasets as prod
+      location: "{{ env_var('GCP_REGION') }}"     # (project is small; no separate dev environment needed)
       threads: 4
       timeout_seconds: 300
       priority: interactive
@@ -38,7 +38,7 @@ football_dbt:
       project: "{{ env_var('GCP_PROJECT_ID') }}"
       keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
       dataset: eu_football_mart
-      location: US
+      location: "{{ env_var('GCP_REGION') }}" 
       threads: 4
       timeout_seconds: 300
       priority: interactive
