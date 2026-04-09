@@ -1,7 +1,0 @@
-- Existia um problema no formato dos arquivos: 
-Ele chega na linha from download_dataset import download_dataset.
-Ele entra no arquivo download_dataset.py.
-Provavelmente, dentro do seu download_dataset.py, existe algum comando que inicializa o cliente do Kaggle ou tenta autenticar fora de uma função.
-Como o ambiente do Composer não tem as credenciais do Kaggle (o arquivo kaggle.json), o script "quebra" imediatamente. Se o script quebra no parse, a DAG nunca aparece.
-
-- As autenticações eram feitas por clientes puros, não usando Hooks que são boas práticas.
