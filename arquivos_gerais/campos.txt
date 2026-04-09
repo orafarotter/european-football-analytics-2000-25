@@ -32,27 +32,3 @@ celepar
 export KAGGLE_USERNAME=rafarotter
 export KAGGLE_API_TOKEN=KGAT_3839db6f2bf06aef32e2a4ec22c43b0c
 export COMPOSER_ENV_NAME=eu-football-composer-env
-
-gcloud composer environments storage dags import \
-    --environment $COMPOSER_ENV_NAME \
-    --location us-east1 \
-    --source dags/football_pipeline_dag.py
-
-gcloud composer environments storage dags import \
-    --environment $COMPOSER_ENV_NAME \
-    --location us-east1 \
-    --source dags/scripts/
-
-gcloud composer environments run $COMPOSER_ENV_NAME \
-	--location us-east1 \
-	variables set -- KAGGLE_USERNAME $KAGGLE_USERNAME
-
-gcloud composer environments run $COMPOSER_ENV_NAME \
-	--location us-east1 \
-	variables set -- KAGGLE_API_TOKEN $KAGGLE_API_TOKEN
-
-gcloud composer environments update $COMPOSER_ENV_NAME \
-    --location us-east1 \
-    --update-pypi-packages-from-file requirements.txt
-
-casa

@@ -13,7 +13,7 @@ from pathlib import Path
 
 # ── Constants ─────────────────────────────────────────────────────────────────
 
-BUCKET_NAME = os.environ.get("PIPELINE_BUCKET", "eu-football-raw-20-25")
+BUCKET_NAME = os.environ.get("GCS_BUCKET", "eu-football-raw-20-25")
 LOCAL_FILE_PATH = Path("/tmp/football/Matches.csv")
 GCS_OBJECT_NAME = "raw/Matches.csv"
 

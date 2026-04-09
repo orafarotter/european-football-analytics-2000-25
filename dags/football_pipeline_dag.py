@@ -12,11 +12,11 @@ Airflow Variables required (set via UI or environment):
     KAGGLE_API_TOKEN  : Kaggle API key
 
 Environment variables (set in docker-compose.yml or .env):
-    PIPELINE_BUCKET   : GCS bucket name
-    PIPELINE_PROJECT  : GCP project ID
-    PIPELINE_RAW_DS   : BigQuery raw dataset ID
+    GCS_BUCKET   : GCS bucket name
+    GCP_PROJECT_ID  : GCP project ID
+    BQ_RAW_DATASET   : BigQuery raw dataset ID
     DBT_PROJECT_DIR   : Absolute path to the dbt project inside the container
-                        Default: /opt/airflow/dbt
+                        Default: /opt/airflow/football_dbt
 """
 
 from __future__ import annotations

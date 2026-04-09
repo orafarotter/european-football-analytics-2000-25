@@ -6,9 +6,9 @@ This script is called by the Airflow DAG (create_external_table task).
 Authentication is handled via Application Default Credentials (ADC).
 
 Environment variables (set in docker-compose.yml or .env):
-    PIPELINE_PROJECT : GCP project ID
-    PIPELINE_RAW_DS  : BigQuery raw dataset ID
-    PIPELINE_BUCKET  : GCS bucket name
+    GCP_PROJECT_ID : GCP project ID
+    BQ_RAW_DATASET  : BigQuery raw dataset ID
+    GCS_BUCKET  : GCS bucket name
 """
 
 import os
@@ -17,10 +17,10 @@ import logging
 # ── Constants ─────────────────────────────────────────────────────────────────
 
 PROJECT_ID = os.environ.get(
-    "PIPELINE_PROJECT", "euro-football-analytics-20-25")
-DATASET_ID = os.environ.get("PIPELINE_RAW_DS",  "eu_football_raw")
+    "GCP_PROJECT_ID", "euro-football-analytics-20-25")
+DATASET_ID = os.environ.get("BQ_RAW_DATASET",  "eu_football_raw")
 TABLE_ID = "raw_matches"
-BUCKET_NAME = os.environ.get("PIPELINE_BUCKET",  "eu-football-raw-20-25")
+BUCKET_NAME = os.environ.get("GCS_BUCKET",  "eu-football-raw-20-25")
 GCS_URI = f"gs://{BUCKET_NAME}/raw/Matches.csv"
 
 # ── Logging ───────────────────────────────────────────────────────────────────

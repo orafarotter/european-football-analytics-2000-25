@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1
 # ---------------------------------------------------------------------------
-# Base image: official Airflow 2.10.5 on Python 3.11
+# Base image: official Airflow 2.7.2 
 # We install project dependencies here so the pip layer is cached by Docker
 # and does NOT re-run on every `docker compose up`.
 # ---------------------------------------------------------------------------
