@@ -4,13 +4,6 @@ set -e
 # Load .env
 export $(grep -v '^#' .env | xargs)
 
-echo "▶ Generating terraform.tfvars..."
-cat > terraform/terraform.tfvars <<EOF
-project_id = "${GCP_PROJECT_ID}"
-region     = "${GCP_REGION}"
-bucket     = "${GCS_BUCKET}"
-EOF
-
 echo "▶ Setting Airflow Variables..."
 docker compose exec airflow-scheduler airflow variables set KAGGLE_USERNAME "${KAGGLE_USERNAME}"
 docker compose exec airflow-scheduler airflow variables set KAGGLE_KEY "${KAGGLE_KEY}"
@@ -28,4 +21,4 @@ echo "▶ Fixing credentials file permissions..."
 # This is safe because the file is mounted read-only (:ro) in docker-compose.yml.
 chmod 644 credentials/pipeline-sa-key.json
 
-echo "✅ Complete setup."
+echo "✅ Setup complete!"
