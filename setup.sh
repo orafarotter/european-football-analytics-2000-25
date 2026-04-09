@@ -7,8 +7,7 @@ export $(grep -v '^#' .env | xargs)
 echo "▶ Setting Airflow Variables..."
 docker compose exec airflow-scheduler airflow variables set KAGGLE_USERNAME "${KAGGLE_USERNAME}"
 docker compose exec airflow-scheduler airflow variables set KAGGLE_KEY "${KAGGLE_KEY}"
-docker compose exec airflow-scheduler airflow variables set GCP_PROJECT_ID "${GCP_PROJECT_ID}"
-docker compose exec airflow-scheduler airflow variables set GCS_BUCKET "${GCS_BUCKET}"
+
 
 echo "▶ Setting Airflow GCP Connection..."
 

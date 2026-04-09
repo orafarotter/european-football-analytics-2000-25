@@ -2,9 +2,8 @@
 upload_to_gcs.py — Uploads the local Matches.csv to Google Cloud Storage.
 
 This script is called by the Airflow DAG (upload_to_gcs task).
-Authentication is handled via Application Default Credentials (ADC):
-  - In Composer: automatic via the pipeline service account.
-  - Locally: run `gcloud auth application-default login` beforehand.
+Authentication is handled via the service-account key mounted into the
+container at GOOGLE_APPLICATION_CREDENTIALS (set in docker-compose.yml).
 """
 
 import os

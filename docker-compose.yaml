@@ -1,5 +1,5 @@
 # ---------------------------------------------------------------------------
-# Docker Compose — Airflow 2.10.5 with LocalExecutor
+# Docker Compose — Airflow 2.7.2 with LocalExecutor
 #
 # Services:
 #   postgres        — Airflow metadata database
@@ -11,7 +11,7 @@
 #   ./dags          — DAGs and scripts (bind-mount, no rebuild needed)
 #   ./football_dbt  — dbt project (bind-mount)
 #   ./credentials   — GCP service-account key (bind-mount, never committed)
-#   ./logs          — Airflow task logs
+#   airflow-logs    — Airflow task logs (named volume)
 #
 # Ports:
 #   8080 → Airflow UI

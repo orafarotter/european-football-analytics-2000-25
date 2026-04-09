@@ -9,7 +9,7 @@ mounted into the container via the GOOGLE_APPLICATION_CREDENTIALS env variable.
 
 Airflow Variables required (set via UI or environment):
     KAGGLE_USERNAME   : Kaggle account username
-    KAGGLE_API_TOKEN  : Kaggle API key
+    KAGGLE_KEY        : Kaggle API key
 
 Environment variables (set in docker-compose.yml or .env):
     GCS_BUCKET   : GCS bucket name
@@ -30,8 +30,8 @@ from airflow.operators.python import PythonOperator
 from airflow.operators.bash import BashOperator
 
 # Import pipeline task functions
-# These modules are importable because PYTHONPATH includes /opt/airflow/dags
-# (set via PYTHONPATH in docker-compose.yml)
+# These modules are importable because Airflow automatically adds the
+# dags folder (/opt/airflow/dags) to sys.path.
 from scripts.download_dataset import download_dataset
 from scripts.upload_to_gcs import upload_to_gcs
 from scripts.create_external_table import create_external_table

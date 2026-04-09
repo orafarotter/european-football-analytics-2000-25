@@ -40,9 +40,9 @@ resource "google_service_account" "pipeline_sa" {
   depends_on = [google_project_service.apis]
 }
 
-# Principle of least privilege: only the roles required for this pipeline.
-# - storage.admin   : read/write to the GCS data lake bucket
-# - bigquery.admin  : create datasets, external tables and run dbt models
+# Broad roles used for simplicity in this project.
+# A production setup should scope permissions to specific resources
+# (e.g. roles/storage.objectAdmin, roles/bigquery.dataEditor + roles/bigquery.jobUser).
 locals {
   sa_roles = [
     "roles/storage.admin",

@@ -50,7 +50,7 @@ models:
         description: "Full-time result as a readable label"
         tests:
           - accepted_values:
-              values: ['Home Win', 'Away Win', 'Draw']
+              values: ['Home Win', 'Away Win', 'Draw', 'Unknown']
 
       - name: goal_difference
         description: "Absolute difference in goals between home and away teams"
