@@ -6,7 +6,6 @@ https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-pow
 - 
 -
 -
-The commands used below are intended for the Linux environment.
 
 ----------------
 
@@ -24,12 +23,12 @@ Settings >> API Tokens >> Generate New Token
 
 4. Ter o Docker instalado 
 
+----------------
+
+The commands used below are intended for the Linux environment.
 
 
 
-
-
-[AVALIAR]
 git clone <repo>
 cd european-football-analytics-2000-25
 cp .env.example .env   # preencher as variáveis
@@ -40,7 +39,7 @@ cp terraform.tfvars.example terraform.tfvars # preencher as variáveis
 5. Autentique-se no GCP 
 gcloud auth login
 
-  5.1 Valide se está no projeto correto:
+  5.1 Se você tem mais de um projeto ativo no GCP, valide se está no projeto correto:
 
   gcloud config get-value project
 
@@ -53,6 +52,7 @@ Ainda dentro da pasta de Terraform
 terraform init
 terraform plan
 terraform apply
+
 Aguarde até o ambiente ser provisionado
 
 Volte para raiz do projeto:
@@ -75,3 +75,20 @@ Verifica a execução do pipeline, se deu certo vai conferir no BQ
 
 
 https://lookerstudio.google.com/
++ Create new report
+
+
+Connect to data
+
+BigQuery 
+
+Authorize 
+
+Project: Your Project 
+
+Dataset: eu_football_mart
+
+Table: fct_european_matches
+
+If pop-up "You are about to add data to this Report" appears, click in "Add to Report" button.
+
