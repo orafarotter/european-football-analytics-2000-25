@@ -11,7 +11,7 @@ renamed as (
 
     select
         -- Surrogate key: division + date + teams is unique per match
-        {{ dbt_utils.generate_surrogate_key(['Division', 'MatchDate', 'HomeTeam', 'AwayTeam']) }}  as match_id,
+        {{ dbt_utils.generate_surrogate_key(['Division', 'MatchDate', 'HomeTeam', 'AwayTeam', 'FTHome', 'FTAway']) }}  as match_id,
 
         -- Match metadata
         Division                                        as division,

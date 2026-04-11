@@ -24,3 +24,14 @@ Falha de compilação por variáveis: O profiles.yml buscava uma variável de am
 Bloqueio de escrita de logs/target: O dbt não tinha permissão para gravar os arquivos compilados na pasta mapeada do host. Solução: Alteramos a DAG para copiar o projeto para a pasta /tmp (livre para escrita), rodar de lá e apagar depois.
 
 Erro 400 no BigQuery (Location Mismatch): O dbt seed falhou pois tentava carregar dados na região global (US) contra um dataset criado na Carolina do Sul. Solução: Ajustamos o parâmetro location no profiles.yml estritamente para us-east1.
+
+
+
+
+
+
+Por que view no staging e table no mart?
+A regra geral no dbt é: materialização acompanha o propósito da camada
+Staging é uma camada de transformação intermediária, não de consumo. Ela existe apenas para limpar, tipar e padronizar os dados brutos — ninguém consome o staging diretamente, nem o Looker Studio, nem analistas. Ela é um "degrau" para chegar no mart.
+Como é apenas um degrau, não faz sentido gastar dinheiro e tempo materializando ela em disco. A view é só uma query salva — ela não ocupa espaço no BigQuery e não tem custo de escrita. Quando o modelo fct_european_matches referencia stg_matches, o BigQuery simplesmente expande a view inline e executa tudo em uma única query.
+Mart é a camada de consumo final. O Looker Studio vai bater nessa tabela potencialmente várias vezes por dia, com filtros, agregações e múltiplos usuários simultâneos. Se fosse uma view, o BigQuery teria que reprocessar os 76.7k rows e 41.8 MiB a cada clique no dashboard. Como é uma table particionada e clusterizada, os dados já estão em disco, organizados — a query é muito mais rápida e barata.
