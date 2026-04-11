@@ -6,6 +6,7 @@ https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-pow
 - 
 -
 -
+The commands used below are intended for the Linux environment.
 
 ----------------
 
@@ -13,62 +14,31 @@ PRE REQUISITOS
 
 1. Ter uma conta no Google Cloud, com uma billing account e um projeto habilitados.
 
-2. Ter o Terraform instalado
+2. Google SDK instalado
+
+3. Ter o Terraform instalado
 https://developer.hashicorp.com/terraform/install
 
-3. Ter uma conta no Kaggle para obter nome de usuário e token.
+4. Ter uma conta no Kaggle para obter nome de usuário e token.
 Settings >> API Tokens >> Generate New Token
 
-[AVALIAR] 4. Ter o Docker instalado 
+4. Ter o Docker instalado 
 
 
 
 
-The commands used below are intended for the Linux environment.
-
-Com base nos pré-requisitos, no seu terminal crie as variáveis:
-
-#Google Cloud Project ID
-export GCP_PROJECT_ID=your_gcp_project_id
-
-#Kaggle Username
-export KAGGLE_USERNAME=your_username
-
-#Kaggle API Token
-export KAGGLE_API_TOKEN=your_api_key
-
-[AVALIAR]
-cp .env.example .env   # preencher as variáveis
-docker compose build   # primeira vez — usa o cache a partir daqui
-docker compose up airflow-init   # migra o banco + cria admin
-docker compose up -d
 
 
 [AVALIAR]
 git clone <repo>
 cd european-football-analytics-2000-25
-cp .env.example .env        # preencher os valores
-terraform -chdir=terraform init && terraform -chdir=terraform apply
-docker compose up -d
-bash setup.sh               # gera tfvars + seta Airflow Variables
+cp .env.example .env   # preencher as variáveis
 
-----------------
-
-PASSOS
-
-3. Clonar o repositorio para a sua estação
-
-git clone <URL>
-
-4. Acesse o  arquivo terraform.tfvars.example em cd terraform/ e informe os valores das variáveis. Todas elas se referem ao Google Cloud como por exemplo: project_id
-  4.1. informe os valores das variáveis 
-  4.2. Renomeie o arquivo para terraform.tfvars
-  4.3. Copie o valor de 'composer_env_name' e salve em uma variável no terminal: 
-    export COMPOSER_ENV_NAME=<nome>
+cd terraform
+cp terraform.tfvars.example terraform.tfvars # preencher as variáveis
 
 5. Autentique-se no GCP 
-
-gcloud auth application-default login
+gcloud auth login
 
   5.1 Valide se está no projeto correto:
 
@@ -78,168 +48,30 @@ gcloud auth application-default login
 
   gcloud config set project <GCP_PROJECT_ID>
 
-Depois execute:
-
-gcloud auth application-default set-quota-project seu-project-id
-
-6. Ainda no diretório cd terraform/ execute os comandos:
+Ainda dentro da pasta de Terraform
 
 terraform init
 terraform plan
 terraform apply
+Aguarde até o ambiente ser provisionado
 
-Aguarde até o ambiente ser provisionado (pegue um café).
+Volte para raiz do projeto:
+
+docker compose build   # primeira vez — usa o cache a partir daqui
+docker compose up airflow-init   # migra o banco + cria admin
+docker compose up -d        # Build the custom image and start the containers in detached mode
+bash setup.sh               # seta Airflow Variables
 
 
---------------------------------------------------
+Acessa localhost:8080
 
-# Replace YOUR_PROJECT_ID with your actual project ID
-gcloud iam service-accounts keys create keys/gcp-service-account.json \
-    --iam-account=eu-football-pipeline-sa@YOUR_PROJECT_ID.iam.gserviceaccount.com
+airflow
+toggle on
 
-
-# Set the Airflow user ID for Linux/Mac compatibility
-echo -e "AIRFLOW_UID=$(id -u)" > .env
-
-LEMBRAR DE ALTERAR O ARQUIVO PARA
-# Build the custom image and start the containers in detached mode
-docker-compose up --build -d
-
----------------------------------------------------
-
-Ao final do deploy salve a URL da variável composer_airflow_uri = "https://fced157b3fb84ffbaaf3a91b8bb2e4d5-dot-us-east1.composer.googleusercontent.com"
-Usaremos na sequência.
-
-[TALVEZ NÃO] 7. Dentro do GCP>IAM>Service Accounts, baixe a chave da conta de serviço que foi criada pelo Terraform
-
-[TALVEZ NÃO] 8. dbt Cloud 
-  1. Crie um projeto no dbt Cloud;
-  2. Utilize a conta de serviço recém criada para fazer a conexão com o BigQuery
-  3. Estabeleça conexão com seu repositório e aponte para pasta 'football_dbt'
-  4. No terminal do dbt execute o comando abaixo para instalar as dependencias
-    dbt deps
-  5. Criar o Environment de Produção
-    1. Acesse Orchestration >> Environments
-    2. + Create environment
-      Environment settings
-        - Environment name: Production
-        - Environment type: Deployment
-        - Set deployment type: Production
-        - dbt version: Latest
-
-      Connection profiles
-        + Assign profile
-        - Save
-
-        + Assign profile
-
-        Save
-
-  6. Criar o Environment Variables
-    1. Acesse Orchestration >> Environments
-      - Aba Environment variables
-    2. + Add variable
-    3. Key: DBT_BIGQUERY_PROJECT
-    4. Project default: <GCP_PROJECT_ID>
-    5. Save
-
-  7. Criar o Jobs
-    1. Acesse Orchestration >> Jobs
-      + Create job > Deploy job
-        Job settings
-          Job name: football_pipeline_production
-          Environment: previous environment created 
-      Execution settings
-        Include the commands in the order below:
-          dbt seed --select leagues
-          dbt run --select stg_matches fct_european_matches
-          dbt test --select stg_matches fct_european_matches
-      
-        Check 'Generate docs on run' to automatically update dbt Catalog documentation each time this job runs
-
-      Schedule
-        Leave the toggle 'Run on schedule' off.
-        Airflow will activate the job via API.
-
-      Save
-
-    On the upper right side, click in "API trigger" and copy the values of:
-      - Account ID
-      - Job ID
-    
-    Leverage the open pop-up and click in "You can find your API key on your profile page."
-
-    
+Verifica a execução do pipeline, se deu certo vai conferir no BQ 
 
 
 
 
 
-
-
-
-
-
-
-
-9. No seu terminal execute os seguintes comandos:
-
-export KAGGLE_USERNAME=your_username
-export KAGGLE_API_TOKEN=your_api_key
-
-10. Faça o upload da DAG e das tasks para o Composer (talvez caiba um bash aqui)
-
-gcloud composer environments storage dags import \
-    --environment $COMPOSER_ENV_NAME \
-    --location us-east1 \
-    --source dags/football_pipeline_dag.py
-
-gcloud composer environments storage dags import \
-    --environment $COMPOSER_ENV_NAME \
-    --location us-east1 \
-    --source dags/scripts/
-
-  10.1. Sete as variáveis do Kaggle no ambiente
-
-gcloud composer environments run $COMPOSER_ENV_NAME \
-	--location us-east1 \
-	variables set -- KAGGLE_USERNAME $KAGGLE_USERNAME
-
-gcloud composer environments run $COMPOSER_ENV_NAME \
-	--location us-east1 \
-	variables set -- KAGGLE_API_TOKEN $KAGGLE_API_TOKEN
-
-  10.2. Suba a biblioteca do Kaggle 
-
-gcloud composer environments update $COMPOSER_ENV_NAME \
-    --location us-east1 \
-    --update-pypi-packages-from-file requirements.txt
-
-
-
-
-
-SOB ANÁLISE  --------------------------------------------------
-
-# Pegue o bucket do Composer
-gcloud composer environments describe eu-football-composer-env \
-  --location us-east1 \
-  --format="value(config.dagGcsPrefix)"
-
-# Faça o upload (substitua YOUR_BUCKET pelo valor retornado acima)
-gcloud storage cp -r football_dbt gs://us-east1-eu-football-compos-e5eb21de-bucket/dags/football_dbt
-
-
-LEMBRAR DE APAGAR O ULTIMO BUCKET DO REPOSITORIO AO TERMINAR
-
-
-RASCUNHO ------------------------------------------------------
-
-2. Dentro do GCP, ative os seguintes recursos:
-
-gcloud services enable \
-  cloudresourcemanager.googleapis.com \
-  storage.googleapis.com \
-  bigquery.googleapis.com \
-
-Segura a ativação do composer.googleapis.com
+https://lookerstudio.google.com/

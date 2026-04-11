@@ -1,7 +1,5 @@
 > conferir se o terraform.tfvars.example está igual ao original (meu pc) ✅
-> conferir se tem um jeito mais rapido de subir o requirements []
-> conferir se o comportamento após subir as dags e arquivos está correto, por exemplo, os arquivos que compoem aparcem onde? [] MUITO LENTO
-
+> ver se tudo foi apagado do GCP []
 
 
 
