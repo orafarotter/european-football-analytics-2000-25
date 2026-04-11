@@ -1,5 +1,6 @@
 > conferir se o terraform.tfvars.example está igual ao original (meu pc) ✅
 > ver se tudo foi apagado do GCP []
+> perimissão de acesso ao json no terraform e no setup []
 
 
 

@@ -92,3 +92,22 @@ Table: fct_european_matches
 
 If pop-up "You are about to add data to this Report" appears, click in "Add to Report" button.
 
+Add a chart > Scorecard
+três scorecards
+
+
+
+
+
+FINAL 
+
+docker compose down
+cd terraform 
+terraform destroy
+
+
+
+
+
+
+https://lookerstudio.google.com/reporting/67b7d22f-b31f-40de-9af0-f8a87ab10c17
