@@ -15,8 +15,6 @@ provider "google" {
 # ===========================
 # REQUIRED APIS
 # ===========================
-# Only the APIs actually used by this pipeline are enabled.
-# Composer was removed — orchestration now runs locally via Docker Compose.
 
 resource "google_project_service" "apis" {
   for_each = toset([
@@ -41,8 +39,7 @@ resource "google_service_account" "pipeline_sa" {
 }
 
 # Broad roles used for simplicity in this project.
-# A production setup should scope permissions to specific resources
-# (e.g. roles/storage.objectAdmin, roles/bigquery.dataEditor + roles/bigquery.jobUser).
+# A production setup should scope permissions to specific resources.
 locals {
   sa_roles = [
     "roles/storage.admin",
@@ -68,7 +65,7 @@ resource "google_service_account_key" "pipeline_sa_key" {
 resource "local_file" "pipeline_sa_key_file" {
   content         = base64decode(google_service_account_key.pipeline_sa_key.private_key)
   filename        = "${path.module}/../credentials/pipeline-sa-key.json"
-  file_permission = "0600" # owner read/write only
+  file_permission = "0644"    # The airflow user inside the container needs read access (644).
 }
 
 # ===========================
@@ -78,9 +75,9 @@ resource "local_file" "pipeline_sa_key_file" {
 resource "google_storage_bucket" "data_lake" {
   name          = var.bucket_name
   location      = var.region
-  force_destroy = true # allows terraform destroy even if the bucket has objects
+  force_destroy = true        # Allows terraform destroy even if the bucket has objects
 
-  uniform_bucket_level_access = true # enforces IAM-only access (no ACLs)
+  uniform_bucket_level_access = true # Enforces IAM-only access (no ACLs)
 
   depends_on = [google_project_service.apis]
 }

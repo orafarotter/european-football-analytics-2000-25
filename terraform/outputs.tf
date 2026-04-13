@@ -1,12 +1,11 @@
 output "service_account_email" {
-  description = "Pipeline service account email — use this in dbt profiles.yml and Airflow connections"
+  description = "Pipeline service account email — useful for auditing IAM roles or identity checks"
   value       = google_service_account.pipeline_sa.email
 }
 
 output "data_lake_bucket_name" {
   description = "GCS bucket name — use this as the upload destination in the DAG"
   value       = google_storage_bucket.data_lake.name
-
 }
 
 output "data_lake_bucket_url" {
@@ -15,7 +14,7 @@ output "data_lake_bucket_url" {
 }
 
 output "service_account_key_path" {
-  description = "Local path to the generated service account JSON key — set as GOOGLE_APPLICATION_CREDENTIALS in .env"
+  description = "Local host path to the generated JSON key (Note: Docker containers will use their internal mapped path like /opt/airflow/...)"
   value       = local_file.pipeline_sa_key_file.filename
   sensitive   = true
 }
