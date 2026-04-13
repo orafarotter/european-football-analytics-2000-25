@@ -8,7 +8,6 @@ echo "▶ Setting Airflow Variables..."
 docker compose exec airflow-scheduler airflow variables set KAGGLE_USERNAME "${KAGGLE_USERNAME}"
 docker compose exec airflow-scheduler airflow variables set KAGGLE_KEY "${KAGGLE_KEY}"
 
-
 echo "▶ Setting Airflow GCP Connection..."
 
 docker compose exec airflow-scheduler airflow connections delete google_cloud_default || true
