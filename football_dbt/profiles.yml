@@ -13,25 +13,12 @@
 #                                    e.g. /opt/airflow/credentials/pipeline-sa-key.json
 #
 # NOTE ON LOCATION:
-# BigQuery datasets were created in 'us-east1' by Terraform, but dbt uses
-# the multi-region 'US' here. Both are compatible for reads/writes — dbt's
-# location setting controls where query jobs run, not where data is stored.
-# Using 'US' avoids issues if any dataset is ever moved to another US region.
+# The location is read from the GCP_REGION environment variable so that
+# dbt query jobs run in the same region as the BigQuery datasets created
+# by Terraform (default: us-east1).
 
 football_dbt:
   outputs:
-
-    dev:
-      type: bigquery
-      method: service-account
-      project: "{{ env_var('GCP_PROJECT_ID') }}"
-      keyfile: "{{ env_var('GOOGLE_APPLICATION_CREDENTIALS') }}"
-      dataset: eu_football_mart                   # dev writes to the same datasets as prod
-      location: "{{ env_var('GCP_REGION') }}"     # (project is small; no separate dev environment needed)
-      threads: 4
-      timeout_seconds: 300
-      priority: interactive
-
     prod:
       type: bigquery
       method: service-account

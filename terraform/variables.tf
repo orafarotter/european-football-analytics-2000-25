@@ -10,7 +10,7 @@ variable "region" {
 }
 
 variable "bucket_name" {
-  description = "GCS bucket used as the raw data lake"
+  description = "GCS bucket used as the data lake for raw CSV files"
   type        = string
   default     = "eu-football-raw-20-25"
 }

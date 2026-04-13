@@ -19,7 +19,7 @@ models:
 
     columns:
       - name: match_id
-        description: "Surrogate key: MD5 of Division + MatchDate + HomeTeam + AwayTeam"
+        description: "Surrogate key: MD5 of Division + MatchDate + HomeTeam + AwayTeam + FTHome + FTAway"
         tests:
           - unique
           - not_null

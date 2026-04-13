@@ -5,7 +5,8 @@ Our objective is discover between the top 10 European leagues, based in Opta Pow
 https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-power-rankings
 - 
 -
--
+- Mencionar que é um ELT
+- Mencionar que é usado apenas um arquivo do dataset 
 
 ----------------
 

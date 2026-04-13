@@ -2,6 +2,23 @@
 > ver se tudo foi apagado do GCP []
 > perimissão de acesso ao json no terraform e no setup []
 
+Testar pipeline. Se não funcionar a permissão de arquivo voltar com:
+#echo "▶ Fixing credentials file permissions..."
+# The Terraform-generated key file defaults to 600 (owner-only).
+# The airflow user inside the container needs read access (644).
+# This is safe because the file is mounted read-only (:ro) in docker-compose.yml.
+#chmod 644 credentials/pipeline-sa-key.json
+
+
+Renomear football_dbt para dbt
+
+
+
+Imagem da arquitetura
+
+
+Explicação do que acontece dentro de dags
+
 
 
 > 30/03/25

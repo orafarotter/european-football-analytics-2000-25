@@ -135,3 +135,11 @@ gcloud composer environments describe eu-football-composer-env \
 
 # Faça o upload (substitua YOUR_BUCKET pelo valor retornado acima)
 gcloud storage cp -r football_dbt gs://us-east1-eu-football-compos-e5eb21de-bucket/dags/football_dbt
+
+------------------------------------------------------
+
+As linhas 92 e 93 do arquivo create_external_table.py realizam a preparação da conexão com o Google BigQuery:
+
+Linha 92 (hook = BigQueryHook()): Inicializa o Hook do BigQuery. No Airflow, um "Hook" é uma interface de alto nível que simplifica a interação com serviços externos (como o GCP), cuidando da autenticação e detalhes da conexão.
+Linha 93 (client = hook.get_client(project_id=PROJECT_ID)): Utiliza esse hook para instanciar um Cliente oficial da biblioteca do Google Cloud (bigquery.Client).
+Ao obter esse client, o script ganha a capacidade de executar operações de baixo nível no BigQuery, como criar, deletar ou modificar tabelas, usando as credenciais que o Airflow já possui.

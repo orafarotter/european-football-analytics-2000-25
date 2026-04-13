@@ -10,7 +10,7 @@ with source as (
 renamed as (
 
     select
-        -- Surrogate key: division + date + teams is unique per match
+        -- Surrogate key: division + date + teams + full-time score (6 fields)
         {{ dbt_utils.generate_surrogate_key(['Division', 'MatchDate', 'HomeTeam', 'AwayTeam', 'FTHome', 'FTAway']) }}  as match_id,
 
         -- Match metadata

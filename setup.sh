@@ -16,10 +16,4 @@ docker compose exec airflow-scheduler airflow connections add google_cloud_defau
     --conn-type google_cloud_platform \
     --conn-extra '{"key_path": "/opt/airflow/credentials/pipeline-sa-key.json", "scope": "https://www.googleapis.com/auth/cloud-platform", "project": "'"${GCP_PROJECT_ID}"'"}'
 
-#echo "▶ Fixing credentials file permissions..."
-# The Terraform-generated key file defaults to 600 (owner-only).
-# The airflow user inside the container needs read access (644).
-# This is safe because the file is mounted read-only (:ro) in docker-compose.yml.
-#chmod 644 credentials/pipeline-sa-key.json
-
 echo "✅ Setup complete!"
