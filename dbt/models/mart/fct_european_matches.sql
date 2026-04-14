@@ -1,7 +1,4 @@
--- Fact table: 10 selected European leagues only, with calculated metrics.
---
--- Partitioned by match_date (YEAR granularity) → efficient time-range queries.
--- Clustered by division, league_name → efficient per-league queries in Looker Studio.
+-- Fact table for top 10 European leagues
 
 {{
     config(
@@ -40,7 +37,7 @@ with european_matches as (
 enriched as (
 
     select
-        -- Keys
+        -- Key
         match_id,
 
         -- Context
@@ -58,7 +55,7 @@ enriched as (
         home_goals_ft,
         away_goals_ft,
 
-        -- Goals (half-time — may be null)
+        -- Goals (half-time)
         home_goals_ht,
         away_goals_ht,
 
@@ -66,7 +63,7 @@ enriched as (
         full_time_result,
         half_time_result,
 
-        -- Match stats (sparse)
+        -- Match stats
         home_shots,
         away_shots,
         home_shots_on_target,
@@ -90,7 +87,7 @@ enriched as (
 
         abs(home_goals_ft - away_goals_ft)              as goal_difference,
 
-        -- Handle NULL half-time goals to avoid silent calculation errors
+        -- Handle nulls in goal timing
         case 
             when home_goals_ht is null or away_goals_ht is null then 'Data Unavailable'
             when (home_goals_ht + away_goals_ht) > 0 and (home_goals_ht + away_goals_ht) = (home_goals_ft + away_goals_ft) then 'All Goals in First Half'

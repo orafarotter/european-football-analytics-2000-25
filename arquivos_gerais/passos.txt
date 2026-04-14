@@ -8,6 +8,8 @@ https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-pow
 - Mencionar que é um ELT
 - Mencionar que é usado apenas um arquivo do dataset 
 
+- Tabela particionada e clusterizada
+
 ----------------
 
 PRE REQUISITOS 

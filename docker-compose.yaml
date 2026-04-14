@@ -9,7 +9,7 @@
 #
 # Volumes:
 #   ./dags          — DAGs and scripts (bind-mount, no rebuild needed)
-#   ./football_dbt  — dbt project (bind-mount)
+#   ./dbt  — dbt project (bind-mount)
 #   ./credentials   — GCP service-account key (bind-mount, never committed)
 #   airflow-logs    — Airflow task logs (named volume)
 #
@@ -48,13 +48,13 @@ x-airflow-common: &airflow-common
     GOOGLE_APPLICATION_CREDENTIALS: /opt/airflow/credentials/pipeline-sa-key.json
 
     # --- dbt ---
-    DBT_PROJECT_DIR: /opt/airflow/football_dbt
+    DBT_PROJECT_DIR: /opt/airflow/dbt
 
     AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
 
   volumes:
     - ./dags:/opt/airflow/dags
-    - ./football_dbt:/opt/airflow/football_dbt
+    - ./dbt:/opt/airflow/dbt
     - ./credentials:/opt/airflow/credentials:ro
     - airflow-logs:/opt/airflow/logs
 

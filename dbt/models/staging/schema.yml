@@ -6,31 +6,23 @@ sources:
     schema: eu_football_raw
     tables:
       - name: raw_matches
-        description: >
-          Raw football match data loaded as a BigQuery external table pointing to
-          gs://<bucket>/raw/Matches.csv.
+        description: "Raw football match data loaded as a BigQuery external table"
 
 models:
   - name: stg_matches
-    description: >
-      Cleaned and typed staging model for football matches.
-      Casts FLOAT64 goal/stats columns to INT64, converts MatchDate to DATE, and joins
-      with the leagues seed to enrich division codes with country and league_name.
+    description: "Staging model for football matches."
 
     columns:
       - name: match_id
-        description: "Surrogate key: MD5 of Division + MatchDate + HomeTeam + AwayTeam + FTHome + FTAway"
+        description: "Unique surrogate key for each match"
         tests:
           - unique
           - not_null
 
       - name: division
-        description: "League division code — foreign key to seeds.leagues.code"
+        description: "League division code"
         tests:
           - not_null
-          # Validates that every division code in the staging model
-          # exists in the leagues seed. Uses 'code' because it is the
-          # primary key of the seed, not 'league_name' (which is not unique).
           - relationships:
               to: ref('leagues')
               field: code
@@ -57,6 +49,6 @@ models:
               values: ['H', 'A', 'D']
 
       - name: league_name
-        description: "Human-readable league name joined from the leagues seed"
+        description: "League name joined from the leagues seed"
         tests:
           - not_null

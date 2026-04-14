@@ -4,10 +4,7 @@ models:
   - name: fct_european_matches
     description: >
       Fact table with European football matches from the top 10 leagues (2000–2025).
-      Partitioned by match_date (year granularity) and clustered by division and
-      league_name to optimize query performance in BigQuery and Looker Studio.
-      Includes calculated columns: total_goals, match_result_label, goal_difference,
-      goal_timing and scoring_category.
+      Partitioned by match_date and clustered by division and league_name.
 
     columns:
       - name: match_id
@@ -17,17 +14,17 @@ models:
           - not_null
 
       - name: match_date
-        description: "Date of the match (DATE type, partition key)"
+        description: "Date of the match"
         tests:
           - not_null
 
       - name: division
-        description: "League division code (cluster key)"
+        description: "League division code"
         tests:
           - not_null
 
       - name: league_name
-        description: "Human-readable league name (cluster key)"
+        description: "League name"
         tests:
           - not_null
 
@@ -58,10 +55,7 @@ models:
           - not_null
 
       - name: goal_timing
-        description: >
-          Timing pattern of goals in the match.
-          'Data Unavailable' is expected for matches where half-time scores
-          were not recorded (common in older seasons and smaller leagues).
+        description: "Timing pattern of goals in the match."
         tests:
           - accepted_values:
               values:

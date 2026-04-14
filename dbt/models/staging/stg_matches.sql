@@ -1,5 +1,4 @@
--- Staging model: cleans raw match data, casts types, and joins with leagues seed.
--- Source: eu_football_raw.raw_matches (BigQuery external table → GCS raw/Matches.csv)
+-- Staging model for match data
 
 with source as (
 
@@ -10,7 +9,7 @@ with source as (
 renamed as (
 
     select
-        -- Surrogate key: division + date + teams + full-time score (6 fields)
+        -- Surrogate key
         {{ dbt_utils.generate_surrogate_key(['Division', 'MatchDate', 'HomeTeam', 'AwayTeam', 'FTHome', 'FTAway']) }}  as match_id,
 
         -- Match metadata
@@ -21,12 +20,12 @@ renamed as (
         HomeTeam                                        as home_team,
         AwayTeam                                        as away_team,
 
-        -- Full-time goals (raw type is FLOAT64 because nullable cells exist in CSV)
+        -- Full-time goals
         safe_cast(FTHome as INT64)                      as home_goals_ft,
         safe_cast(FTAway as INT64)                      as away_goals_ft,
         FTResult                                        as full_time_result,
 
-        -- Half-time goals (sparse — null for many leagues and early seasons)
+        -- Half-time goals
         safe_cast(HTHome as INT64)                      as home_goals_ht,
         safe_cast(HTAway as INT64)                      as away_goals_ht,
         HTResult                                        as half_time_result,
@@ -39,7 +38,7 @@ renamed as (
         safe_cast(Form3Away  as FLOAT64)                as form_3_away,
         safe_cast(Form5Away  as FLOAT64)                as form_5_away,
 
-        -- Match stats (sparse — not collected for all leagues/seasons)
+        -- Match stats
         safe_cast(HomeShots   as INT64)                 as home_shots,
         safe_cast(AwayShots   as INT64)                 as away_shots,
         safe_cast(HomeTarget  as INT64)                 as home_shots_on_target,
@@ -53,7 +52,7 @@ renamed as (
         safe_cast(HomeRed     as INT64)                 as home_red_cards,
         safe_cast(AwayRed     as INT64)                 as away_red_cards,
 
-        -- Average market odds (home / draw / away)
+        -- Average market odds
         safe_cast(OddHome as FLOAT64)                   as odds_home,
         safe_cast(OddDraw as FLOAT64)                   as odds_draw,
         safe_cast(OddAway as FLOAT64)                   as odds_away,

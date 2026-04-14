@@ -16,7 +16,7 @@ from scripts.create_external_table import create_external_table
 
 logger = logging.getLogger(__name__)
 
-DBT_PROJECT_DIR = os.getenv("DBT_PROJECT_DIR", "/opt/airflow/football_dbt")
+DBT_PROJECT_DIR = os.getenv("DBT_PROJECT_DIR", "/opt/airflow/dbt")
 DBT_BIN = "/home/airflow/.local/bin/dbt"
 
 default_args = {
