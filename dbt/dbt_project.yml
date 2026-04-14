@@ -1,4 +1,4 @@
-name: 'dbt'
+name: 'eu_football_dbt'
 version: '1.0.0'
 config-version: 2
 
@@ -14,7 +14,7 @@ clean-targets:
   - "dbt_packages"
 
 models:
-  dbt:
+  eu_football_dbt:
     staging:
       +materialized: view
       +schema: eu_football_staging    
@@ -24,7 +24,7 @@ models:
       +schema: eu_football_mart       
 
 seeds:
-  dbt:
+  eu_football_dbt:
     leagues:
       +schema: eu_football_raw        
       +column_types:
