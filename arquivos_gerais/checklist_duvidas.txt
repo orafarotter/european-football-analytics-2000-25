@@ -1,20 +1,5 @@
-> conferir se o terraform.tfvars.example está igual ao original (meu pc) ✅
+> parei na linha 230 do README
+> imagem da arquitetura []
+> explicação do que acontece dentro de dags []
+> 185 privelegios da conta de serviço (testar)
 > ver se tudo foi apagado do GCP quando fizer o destroy []
-> permissão de acesso ao json no terraform e no setup []
-
-ANOTAÇÃO
-Testar pipeline. Se não funcionar a permissão de arquivo voltar com:
-#echo "▶ Fixing credentials file permissions..."
-# The Terraform-generated key file defaults to 600 (owner-only).
-# The airflow user inside the container needs read access (644).
-# This is safe because the file is mounted read-only (:ro) in docker-compose.yml.
-#chmod 644 credentials/pipeline-sa-key.json
-
-
-
-
-
-Imagem da arquitetura
-
-
-Explicação do que acontece dentro de dags

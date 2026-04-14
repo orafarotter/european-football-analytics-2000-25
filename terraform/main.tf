@@ -36,8 +36,9 @@ resource "google_service_account" "pipeline_sa" {
 
 locals {
   sa_roles = [
-    "roles/storage.admin",
-    "roles/bigquery.admin",
+    "roles/storage.objectAdmin",
+    "roles/bigquery.dataEditor",
+    "roles/bigquery.jobUser",
   ]
 }
 

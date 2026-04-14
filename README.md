@@ -4,20 +4,20 @@ An end-to-end **batch ELT data pipeline** built on Google Cloud Platform (GCP), 
 
 > 📊 **[View the Live Dashboard](https://lookerstudio.google.com/reporting/67b7d22f-b31f-40de-9af0-f8a87ab10c17)**
 
----
-
 ## 📌 Problem Description
 
 The dataset contains football match data from more than 30 leagues worldwide, spanning from the 2000/01 season through the most recent results of the 2024/25 season.
 
-This project focuses on the **top 10 European leagues**, selected based on the [Opta Power Rankings (Apr 2, 2026)](https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-power-rankings), and answers the following analytical questions:
+This project focuses on the **top 10 European leagues**, selected based on the [Opta Power Rankings (Apr 2, 2026)](https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-power-rankings), and addresses the following analytical questions:
 
+- What is the total number of matches analyzed across all leagues and years?
+- What is the overall average number of goals per match?
 - Which leagues have the most matches played?
 - How has the average number of goals per match evolved over time?
 - How are match results distributed (Home Win / Away Win / Draw)?
-- Which leagues produce the most high-scoring, intense matches?
+- Which leagues produce the most high-scoring matches?
 
----
+![Opta Power Rankings](assets/20260402_OPTA_Analyst.png)
 
 ## 🗺️ Architecture
 
@@ -28,24 +28,22 @@ This project focuses on the **top 10 European leagues**, selected based on the [
 [Cloud Storage — GCS: raw/matches.csv]
      │
      ▼  BigQuery External Table (Airflow DAG)
-[BigQuery — eu_football_raw]         ← Bronze: raw external table
+[BigQuery — eu_football_raw]         ← Bronze
      │
      ▼  dbt (triggered via Airflow DAG)
-[BigQuery — eu_football_staging]     ← Silver: cleaned, typed, deduplicated views
+[BigQuery — eu_football_staging]     ← Silver
      │
      ▼
-[BigQuery — eu_football_mart]        ← Gold: partitioned + clustered fact table
+[BigQuery — eu_football_mart]        ← Gold
      │
      ▼
-[Looker Studio — Dashboard]
+[Looker Studio]
 ```
 
 This project follows the **Medallion / ELT** pattern:
 - **Bronze** — raw data landed in GCS and exposed via BigQuery external table
 - **Silver** — staging layer: type casting, surrogate key generation, null filtering, join with league seed
 - **Gold** — mart layer: filtered for 10 European leagues, enriched with calculated columns, partitioned by year, clustered by `division` and `league_name`
-
----
 
 ## 🏗️ Tech Stack
 
@@ -59,16 +57,14 @@ This project follows the **Medallion / ELT** pattern:
 | Transformations               | dbt Core                          |
 | Dashboard                     | Looker Studio                     |
 
----
-
 ## 📦 Dataset
 
 - **Source:** [Club Football Match Data 2000–2025 — Kaggle](https://www.kaggle.com/datasets/adamgbor/club-football-match-data-2000-2025)
-- **Format:** Single CSV file
+- **Format:** Consolidated CSV dataset
 - **Coverage:** 30+ leagues worldwide, seasons 2000/01 through 2024/25
-- **Used in this project:** 10 European leagues (see below)
+- **Used in this analysis:** 10 European leagues (see below)
 
-> **Note:** Only the main CSV file from the dataset is used in this project.
+> **Note:** This project uses only the main CSV file from the dataset.
 
 ### Leagues Selected
 
@@ -85,8 +81,6 @@ This project follows the **Medallion / ELT** pattern:
 | DEN  | Denmark  | Superliga         |
 | POL  | Poland   | Ekstraklasa       |
 
----
-
 ## 📁 Repository Structure
 
 ```
@@ -100,10 +94,8 @@ european-football-analytics-2000-25/
 ├── Dockerfile
 ├── README.md
 ├── requirements.txt
-└── setup.sh                 # Sets Airflow Variables from .env
+└── setup.sh                 # Initializes Airflow variables and GCP connection from .env
 ```
-
----
 
 ## 🚀 How to Reproduce
 
@@ -113,22 +105,21 @@ european-football-analytics-2000-25/
 
 Before you begin, make sure you have the following installed and configured:
 
-1. **Google Cloud account** with billing enabled and a project created
+1. **Google Cloud project** with billing enabled
    → https://cloud.google.com/
 
-2. **Google Cloud SDK** installed and configured
+2. **Google Cloud SDK** installed and authenticated
    → https://cloud.google.com/sdk/docs/install
 
 3. **Terraform** installed
    → https://developer.hashicorp.com/terraform/install
 
-4. **Docker** (with Docker Compose) installed
+4. **Docker** with Docker Compose installed
    → https://docs.docker.com/engine/install/
 
-5. **Kaggle account** (to generate an API key)
+5. **Kaggle account** with API credentials generated
    → https://www.kaggle.com/
 
----
 
 ### Step 1 — Clone the Repository & Configure Environment Variables
 
@@ -147,15 +138,14 @@ Edit `.env` with your values:
 
 | Variable | Description | How to get it |
 |---|---|---|
-| `AIRFLOW_SECRET_KEY` | Random secret for Airflow web server | Run: `python -c "import secrets; print(secrets.token_hex(32))"` |
-| `AIRFLOW__CORE__FERNET_KEY` | Encryption key for Airflow connections | Run: `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` |
+| `AIRFLOW_SECRET_KEY` | Secret key for Airflow webserver sessions | Run: `python -c "import secrets; print(secrets.token_hex(32))"` |
+| `AIRFLOW__CORE__FERNET_KEY` | Encryption key for sensitive data (connections, variables) | Run: `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"` |
 | `GCP_PROJECT_ID` | Your GCP Project ID | GCP Console → Project selector |
-| `GCP_REGION` | GCP region (e.g. `us-east1`) | Your preferred region |
+| `GCP_REGION` | GCP region (e.g. `us-east1`) used for resources | Your preferred region |
 | `GCS_BUCKET` | Name for the GCS bucket | Choose a globally unique name |
 | `KAGGLE_USERNAME` | Your Kaggle username | kaggle.com → Settings → Active logins |
 | `KAGGLE_KEY` | Your Kaggle API key | kaggle.com → Settings → API Tokens → Generate New Token |
 
----
 
 ### Step 2 — Configure Terraform Variables
 
@@ -176,7 +166,6 @@ service_account_name = "<SERVICE_ACCOUNT_NAME>"
 > ⚠️ `project_id`, `region`, and `bucket_name` must match the values set in `.env`.
 > The `service_account_name` must match the regex: `^[a-z]([-a-z0-9]*[a-z0-9])?$`
 
----
 
 ### Step 3 — Authenticate with GCP & Provision Infrastructure
 
@@ -203,13 +192,10 @@ terraform apply
 ```
 
 Wait for the provisioning to complete. This will create:
-- A dedicated GCP Service Account
+- A dedicated GCP service account with least-privilege access
 - A GCS bucket for the raw data lake
 - BigQuery datasets: `eu_football_raw`, `eu_football_staging`, `eu_football_mart`
 
-MENCIONAR AQUI QUE A CONTA TEM MAIS PRIVILEGIOS SO PARA FINS DIDATICOS
-
----
 
 ### Step 4 — Start Airflow and Run the Pipeline
 
@@ -222,10 +208,10 @@ cd ..
 Build the Docker image and initialize Airflow:
 
 ```bash
-docker compose build          # Build the custom image (uses cache on subsequent runs)
-docker compose up airflow-init  # Runs DB migrations and creates the admin user
-docker compose up -d            # Start all containers in detached mode
-bash setup.sh                   # Inject Airflow Variables from your .env file
+docker compose build             # Build the custom image (uses cache on subsequent runs)
+docker compose up airflow-init   # Run DB migrations and creates the admin user
+docker compose up -d             # Start all containers in detached mode
+bash setup.sh                    # Run initial Airflow setup
 ```
 
 Access the Airflow UI at **http://localhost:8080**
@@ -236,6 +222,8 @@ Password: admin
 ```
 
 The DAG will appear on the home screen. Enable it using the **toggle switch**, then open it to monitor execution.
+
+![Airflow DAGs overview](assets/airflow-dags-overview.png)
 
 #### What the pipeline does
 
@@ -250,9 +238,10 @@ The DAG runs the following tasks in sequence:
    - Builds `fct_european_matches` (table): filtered for the 10 European leagues, partitioned by year, clustered by league and league name, with enriched columns (`total_goals`, `goal_difference`, `match_result_label`, `scoring_category`)
    - Runs 21 dbt tests (not_null, accepted_values, relationships)
 
+![Airflow DAG run details](assets/airflow-dag-run-details.png)
+
 Once the DAG completes successfully, verify the output in **BigQuery** → `eu_football_mart` → `fct_european_matches`.
 
----
 
 ### Step 5 — Explore the Dashboard
 
@@ -272,7 +261,6 @@ To build your own dashboard connected to your data:
 
 You are now ready to build your own visualizations.
 
----
 
 ### Teardown
 
@@ -289,11 +277,10 @@ cd terraform
 terraform destroy
 ```
 
----
-
 ## 📊 Dashboard Preview
 
-![Dashboard Screenshot](assets/dashboard_screenshot.png)
+![Dashboard Screenshot](assets/looker_dashboard.png)
+
 
 > **[Open Dashboard](https://lookerstudio.google.com/reporting/67b7d22f-b31f-40de-9af0-f8a87ab10c17)**
 >
