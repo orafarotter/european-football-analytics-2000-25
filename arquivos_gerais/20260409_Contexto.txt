@@ -119,7 +119,7 @@ B1    | Belgium        | Pro League
 
 #### dbt project structure:
 ```
-football_dbt/
+dbt/
 ├── macros/
 │   └── generate_schema_name.sql
 ├── models/
@@ -187,7 +187,7 @@ european-football-analytics-2000-25/
 │   │   ├── download_dataset.py
 │   │   └── upload_to_gcs.py
 │   └── football_pipeline_dag.py
-├── football_dbt/
+├── dbt/
 │   └── ... (complete dbt project)
 ├── .gitignore
 ├── docker-compose.yaml
@@ -218,7 +218,7 @@ find /home/airflow -name "dbt" 2>/dev/null  # returns /home/airflow/.local/bin/d
 
 ### Current (broken) DAG task:
 ```python
-DBT_PROJECT_DIR = "/opt/airflow/football_dbt"
+DBT_PROJECT_DIR = "/opt/airflow/dbt"
 
 t4_dbt_run = BashOperator(
     task_id="run_dbt",
@@ -237,7 +237,7 @@ t4_dbt_run = BashOperator(
 Replace `dbt` with the absolute path `/home/airflow/.local/bin/dbt`:
 
 ```python
-DBT_PROJECT_DIR = "/opt/airflow/football_dbt"
+DBT_PROJECT_DIR = "/opt/airflow/dbt"
 DBT_BIN = "/home/airflow/.local/bin/dbt"  # explicit path — avoids PATH issues
 
 t4_dbt_run = BashOperator(
@@ -257,7 +257,7 @@ t4_dbt_run = BashOperator(
 ```
 
 ### Next Step After Fixing
-After the `run_dbt` task passes, verify the `profiles.yml` inside `/opt/airflow/football_dbt/` is correctly configured with the right `project_id`, `dataset`, and `keyfile` path — this is the next most likely failure point.
+After the `run_dbt` task passes, verify the `profiles.yml` inside `/opt/airflow/dbt/` is correctly configured with the right `project_id`, `dataset`, and `keyfile` path — this is the next most likely failure point.
 
 ---
 

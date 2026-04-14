@@ -42,7 +42,7 @@ Mart é a camada de consumo final. O Looker Studio vai bater nessa tabela potenc
 dbt Cloud 
   1. Crie um projeto no dbt Cloud;
   2. Utilize a conta de serviço recém criada para fazer a conexão com o BigQuery
-  3. Estabeleça conexão com seu repositório e aponte para pasta 'football_dbt'
+  3. Estabeleça conexão com seu repositório e aponte para pasta 'dbt'
   4. No terminal do dbt execute o comando abaixo para instalar as dependencias
     dbt deps
   5. Criar o Environment de Produção
@@ -134,7 +134,7 @@ gcloud composer environments describe eu-football-composer-env \
   --format="value(config.dagGcsPrefix)"
 
 # Faça o upload (substitua YOUR_BUCKET pelo valor retornado acima)
-gcloud storage cp -r football_dbt gs://us-east1-eu-football-compos-e5eb21de-bucket/dags/football_dbt
+gcloud storage cp -r dbt gs://us-east1-eu-football-compos-e5eb21de-bucket/dags/dbt
 
 ------------------------------------------------------
 

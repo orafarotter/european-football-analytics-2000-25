@@ -10,7 +10,6 @@ Testar pipeline. Se não funcionar a permissão de arquivo voltar com:
 #chmod 644 credentials/pipeline-sa-key.json
 
 
-Renomear football_dbt para dbt
 
 
 
@@ -62,7 +61,7 @@ PROJECT
 eu-football-20-25
 
 Project subdirectory
-football_dbt
+dbt
 
 DATASET
 dbt_eu_football
