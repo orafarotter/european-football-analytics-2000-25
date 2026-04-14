@@ -203,9 +203,11 @@ terraform apply
 ```
 
 Wait for the provisioning to complete. This will create:
-- A dedicated GCP Service Account with least-privilege roles
+- A dedicated GCP Service Account
 - A GCS bucket for the raw data lake
 - BigQuery datasets: `eu_football_raw`, `eu_football_staging`, `eu_football_mart`
+
+MENCIONAR AQUI QUE A CONTA TEM MAIS PRIVILEGIOS SO PARA FINS DIDATICOS
 
 ---
 
