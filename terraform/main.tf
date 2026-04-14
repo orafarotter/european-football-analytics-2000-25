@@ -12,9 +12,7 @@ provider "google" {
   region  = var.region
 }
 
-# ===========================
-# REQUIRED APIS
-# ===========================
+# Project APIs
 
 resource "google_project_service" "apis" {
   for_each = toset([
@@ -27,9 +25,7 @@ resource "google_project_service" "apis" {
   disable_on_destroy = false
 }
 
-# ===========================
-# SERVICE ACCOUNT
-# ===========================
+# IAM & Service Account
 
 resource "google_service_account" "pipeline_sa" {
   account_id   = var.service_account_name
@@ -38,8 +34,6 @@ resource "google_service_account" "pipeline_sa" {
   depends_on = [google_project_service.apis]
 }
 
-# Broad roles used for simplicity in this project.
-# A production setup should scope permissions to specific resources.
 locals {
   sa_roles = [
     "roles/storage.admin",
@@ -55,9 +49,7 @@ resource "google_project_iam_member" "pipeline_sa_roles" {
   member  = "serviceAccount:${google_service_account.pipeline_sa.email}"
 }
 
-# Generate a JSON key for the service account.
-# This key is used by the Airflow Docker container via GOOGLE_APPLICATION_CREDENTIALS.
-# The key file is written locally and must NEVER be committed to the repository.
+# Generate JSON key for local development and Airflow Container credentials
 resource "google_service_account_key" "pipeline_sa_key" {
   service_account_id = google_service_account.pipeline_sa.name
 }
@@ -68,27 +60,19 @@ resource "local_file" "pipeline_sa_key_file" {
   file_permission = "0644"    # The airflow user inside the container needs read access (644).
 }
 
-# ===========================
-# CLOUD STORAGE
-# ===========================
+# Cloud Storage
 
 resource "google_storage_bucket" "data_lake" {
   name          = var.bucket_name
   location      = var.region
-  force_destroy = true        # Allows terraform destroy even if the bucket has objects
+  force_destroy = true # Allows terraform destroy even if the bucket has objects
 
-  uniform_bucket_level_access = true # Enforces IAM-only access (no ACLs)
+  uniform_bucket_level_access = true
 
   depends_on = [google_project_service.apis]
 }
 
-# ===========================
-# BIGQUERY DATASETS
-# ===========================
-# Three datasets following the medallion architecture:
-#   eu_football_raw      → external table over raw GCS CSV (Bronze)
-#   eu_football_staging  → cleaned and typed models (Silver)
-#   eu_football_mart     → partitioned and clustered analytical models (Gold)
+# BigQuery Datasets
 
 resource "google_bigquery_dataset" "datasets" {
   for_each = toset(var.bq_datasets)

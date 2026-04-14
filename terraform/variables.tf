@@ -10,19 +10,19 @@ variable "region" {
 }
 
 variable "bucket_name" {
-  description = "GCS bucket used as the data lake for raw CSV files"
+  description = "GCS bucket for the data lake"
   type        = string
   default     = "eu-football-raw-20-25"
 }
 
 variable "service_account_name" {
-  description = "ID of the dedicated service account for this pipeline"
+  description = "Service account ID for the data pipeline"
   type        = string
   default     = "eu-football-pipeline-sa"
 }
 
 variable "bq_datasets" {
-  description = "List of BigQuery dataset IDs to create (medallion architecture: raw → staging → mart)"
+  description = "List of BigQuery datasets to create"
   type        = list(string)
   default     = ["eu_football_raw", "eu_football_staging", "eu_football_mart"]
 }

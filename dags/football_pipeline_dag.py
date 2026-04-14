@@ -59,16 +59,16 @@ with DAG(
         task_id="run_dbt",
         append_env=True,
         bash_command=(
-            #Clear any previous tmp folder to avoid conflicts
+            # Clear any previous tmp folder to avoid conflicts
             "rm -rf /tmp/dbt_project && "
-            #Copy the entire dbt project to the writable /tmp directory
+            # Copy the entire dbt project to the writable /tmp directory
             "cp -R {{ params.dbt_dir }} /tmp/dbt_project && "
-            #Execute all dbt commands pointing to the new /tmp location
+            # Execute all dbt commands pointing to the new /tmp location
             "{{ params.dbt_bin }} deps  --project-dir /tmp/dbt_project --profiles-dir /tmp/dbt_project && "
             "{{ params.dbt_bin }} seed  --project-dir /tmp/dbt_project --profiles-dir /tmp/dbt_project && "
             "{{ params.dbt_bin }} run   --project-dir /tmp/dbt_project --profiles-dir /tmp/dbt_project && "
             "{{ params.dbt_bin }} test  --project-dir /tmp/dbt_project --profiles-dir /tmp/dbt_project && "
-            #Clean up after successful execution
+            # Clean up after successful execution
             "rm -rf /tmp/dbt_project"
         ),
         params={

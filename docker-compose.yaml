@@ -1,22 +1,3 @@
-# ---------------------------------------------------------------------------
-# Docker Compose — Airflow 2.7.2 with LocalExecutor
-#
-# Services:
-#   postgres        — Airflow metadata database
-#   airflow-init    — one-shot container: db migrate + create admin user
-#   airflow-webserver
-#   airflow-scheduler
-#
-# Volumes:
-#   ./dags          — DAGs and scripts (bind-mount, no rebuild needed)
-#   ./dbt  — dbt project (bind-mount)
-#   ./credentials   — GCP service-account key (bind-mount, never committed)
-#   airflow-logs    — Airflow task logs (named volume)
-#
-# Ports:
-#   8080 → Airflow UI
-# ---------------------------------------------------------------------------
-
 x-airflow-common: &airflow-common
   build:
     context: .
@@ -25,29 +6,28 @@ x-airflow-common: &airflow-common
   env_file:
     - .env
   environment:
-    # --- Core ---
+    # Core
     AIRFLOW__CORE__EXECUTOR: LocalExecutor
     AIRFLOW__CORE__LOAD_EXAMPLES: "false"
     AIRFLOW__CORE__DAGS_ARE_PAUSED_AT_CREATION: "true"
 
-    # --- Database ---
+    # Database
     AIRFLOW__DATABASE__SQL_ALCHEMY_CONN: postgresql+psycopg2://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
 
-    # --- Webserver ---
+    # Webserver
     AIRFLOW__WEBSERVER__SECRET_KEY: ${AIRFLOW_SECRET_KEY}
     AIRFLOW__WEBSERVER__EXPOSE_CONFIG: "true"
 
-    # --- Logging ---
+    # Logging
     AIRFLOW__LOGGING__LOGGING_LEVEL: INFO
 
-    # IMPORTANT: leave this empty so Airflow does NOT reinstall packages
-    # on every container start (we bake them into the image instead).
+    # Additional dependencies are baked into the image
     _PIP_ADDITIONAL_REQUIREMENTS: ""
 
-    # --- GCP credentials ---
+    # GCP credentials
     GOOGLE_APPLICATION_CREDENTIALS: /opt/airflow/credentials/pipeline-sa-key.json
 
-    # --- dbt ---
+    # dbt
     DBT_PROJECT_DIR: /opt/airflow/dbt
 
     AIRFLOW__CORE__FERNET_KEY: ${AIRFLOW__CORE__FERNET_KEY}
@@ -64,7 +44,6 @@ x-airflow-common: &airflow-common
 
   restart: unless-stopped
 
-# ---------------------------------------------------------------------------
 services:
   postgres:
     image: postgres:15-alpine
@@ -81,10 +60,7 @@ services:
       retries: 5
     restart: unless-stopped
 
-  # ---------------------------------------------------------------------------
-  # One-shot service: runs `airflow db migrate` and creates the admin user,
-  # then exits. Compose won't start the other services until this completes.
-  # ---------------------------------------------------------------------------
+  # Database initialization and user creation
   airflow-init:
     <<: *airflow-common
     command: >
@@ -124,7 +100,6 @@ services:
       airflow-init:
         condition: service_completed_successfully
 
-# ---------------------------------------------------------------------------
 volumes:
   postgres-db:
   airflow-logs:
