@@ -1,4 +1,4 @@
-# European Football Analytics 2000–2025 🇪🇺🏟️
+# European Football Analytics 2000–2025
 
 An end-to-end **batch ELT data pipeline** built on Google Cloud Platform (GCP), using a single public Kaggle dataset to answer analytical questions about the top 10 European football leagues — from raw data to an interactive Looker Studio dashboard.
 
@@ -12,12 +12,10 @@ The dataset contains football match data from more than 30 leagues worldwide, sp
 
 This project focuses on the **top 10 European leagues**, selected based on the [Opta Power Rankings (Apr 2, 2026)](https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-power-rankings), and answers the following analytical questions:
 
-- 🏆 Which leagues have the most matches played?
-- ⚽ How has the average number of goals per match evolved over time?
-- 📊 How are match results distributed (Home Win / Away Win / Draw)?
-- 🔥 Which leagues produce the most high-scoring, intense matches?
-
-> **Note:** Only the main CSV file from the dataset is used in this project.
+- Which leagues have the most matches played?
+- How has the average number of goals per match evolved over time?
+- How are match results distributed (Home Win / Away Win / Draw)?
+- Which leagues produce the most high-scoring, intense matches?
 
 ---
 
@@ -44,8 +42,8 @@ This project focuses on the **top 10 European leagues**, selected based on the [
 
 This project follows the **Medallion / ELT** pattern:
 - **Bronze** — raw data landed in GCS and exposed via BigQuery external table
-- **Silver** — staging layer: type casting, deduplication, join with league metadata (dbt seed)
-- **Gold** — mart layer: filtered, enriched, partitioned by year, clustered by league
+- **Silver** — staging layer: type casting, surrogate key generation, null filtering, join with league seed
+- **Gold** — mart layer: filtered for 10 European leagues, enriched with calculated columns, partitioned by year, clustered by `division` and `league_name`
 
 ---
 
@@ -70,14 +68,16 @@ This project follows the **Medallion / ELT** pattern:
 - **Coverage:** 30+ leagues worldwide, seasons 2000/01 through 2024/25
 - **Used in this project:** 10 European leagues (see below)
 
+> **Note:** Only the main CSV file from the dataset is used in this project.
+
 ### Leagues Selected
 
 | Code | Country  | League            |
 |------|----------|-------------------|
 | E0   | England  | Premier League    |
 | SP1  | Spain    | La Liga           |
-| D1   | Germany  | Bundesliga        |
 | I1   | Italy    | Serie A           |
+| D1   | Germany  | Bundesliga        |
 | F1   | France   | Ligue 1           |
 | B1   | Belgium  | Pro League        |
 | P1   | Portugal | Primeira Liga     |
@@ -308,10 +308,8 @@ terraform destroy
 
 ## ⭐ Going the Extra Mile
 
-- **dbt tests** — 21 tests across all models covering `not_null`, `accepted_values`, and `relationships` constraints. All tests pass ✅
+- **dbt tests** — tests across all models covering `not_null`, `accepted_values`, and `relationships` constraints. All tests pass ✅
 - **Partitioning & Clustering** — `fct_european_matches` is partitioned by year (`DATE_TRUNC(match_date, YEAR)`) and clustered by `division` and `league_name` for optimal query performance and cost efficiency in BigQuery
-- **Idempotent pipeline** — every step can be re-run safely; GCS upload overwrites the existing file and the external table is created with `CREATE OR REPLACE`
-- **Least-privilege IAM** — the service account provisioned by Terraform has only the minimum roles required (`storage.admin`, `bigquery.admin`)
 
 ---
 
