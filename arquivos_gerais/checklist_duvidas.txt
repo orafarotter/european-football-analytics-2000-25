@@ -1,7 +1,8 @@
 > conferir se o terraform.tfvars.example está igual ao original (meu pc) ✅
-> ver se tudo foi apagado do GCP []
-> perimissão de acesso ao json no terraform e no setup []
+> ver se tudo foi apagado do GCP quando fizer o destroy []
+> permissão de acesso ao json no terraform e no setup []
 
+ANOTAÇÃO
 Testar pipeline. Se não funcionar a permissão de arquivo voltar com:
 #echo "▶ Fixing credentials file permissions..."
 # The Terraform-generated key file defaults to 600 (owner-only).
