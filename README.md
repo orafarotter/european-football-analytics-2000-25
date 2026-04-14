@@ -17,8 +17,6 @@ This project focuses on the **top 10 European leagues**, selected based on the [
 - How are match results distributed (Home Win / Away Win / Draw)?
 - Which leagues produce the most high-scoring matches?
 
-![Opta Power Rankings](assets/20260402_OPTA_Analyst.png)
-
 <p align="center">
   <img src="assets/20260402_OPTA_Analyst.png" alt="Opta Power Rankings">
 </p>
@@ -227,7 +225,9 @@ Password: admin
 
 The DAG will appear on the home screen. Enable it using the **toggle switch**, then open it to monitor execution.
 
-![Airflow DAGs overview](assets/airflow-dags-overview.png)
+<p align="center">
+  <img src="assets/airflow-dags-overview.png" alt="Airflow DAGs overview">
+</p>
 
 #### What the pipeline does
 
@@ -242,7 +242,11 @@ The DAG runs the following tasks in sequence:
    - Builds `fct_european_matches` (table): filtered for the 10 European leagues, partitioned by year, clustered by league and league name, with enriched columns (`total_goals`, `goal_difference`, `match_result_label`, `scoring_category`)
    - Runs 21 dbt tests (not_null, accepted_values, relationships)
 
-![Airflow DAG run details](assets/airflow-dag-run-details.png)
+
+<p align="center">
+  <img src="assets/airflow-dag-run-details.png" alt="Airflow DAG run details">
+</p>
+
 
 Once the DAG completes successfully, verify the output in **BigQuery** → `eu_football_mart` → `fct_european_matches`.
 
