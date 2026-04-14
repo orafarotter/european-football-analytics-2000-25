@@ -1,0 +1,145 @@
+dbt CONHECIMENTO
+
+Em projetos com dbt, o schema.yml é colocado dentro das pastas (staging, marts, etc.) por organização lógica, manutenção e governança dos modelos. A estrutura não é obrigatória, mas segue boas práticas amplamente adotadas.
+
+Para sincronizar seu repositório com o dbt Cloud clique em "Pull from remote"
+
+#instalar dependências (pacotes) definidas no arquivo packages.yml do seu projeto dbt
+dbt deps 
+
+para achar as configurações no dbt cloud ui...
+clica no SET UP CLI no cantoesquerdo inferior
+dai um menu irá aparecer
+
+
+
+--------------------------------------------
+
+Erro de PATH no dbt (Exit code 2): O Airflow não encontrava o executável do dbt no container. Solução: Parametrizamos o caminho absoluto (/home/airflow/.local/bin/dbt) diretamente na DAG.
+
+Permissão negada na Service Account: A task upload_to_gcs não conseguia ler a chave JSON mapeada no Docker. Solução: Executamos chmod 644 no arquivo localmente (host) para liberar a leitura.
+
+Falha de compilação por variáveis: O profiles.yml buscava uma variável de ambiente diferente da definida, quebrando o dbt antes de rodar. Solução: Fixamos o ID do projeto e o caminho da credencial diretamente no perfil.
+
+Bloqueio de escrita de logs/target: O dbt não tinha permissão para gravar os arquivos compilados na pasta mapeada do host. Solução: Alteramos a DAG para copiar o projeto para a pasta /tmp (livre para escrita), rodar de lá e apagar depois.
+
+Erro 400 no BigQuery (Location Mismatch): O dbt seed falhou pois tentava carregar dados na região global (US) contra um dataset criado na Carolina do Sul. Solução: Ajustamos o parâmetro location no profiles.yml estritamente para us-east1.
+
+
+
+
+
+
+Por que view no staging e table no mart?
+A regra geral no dbt é: materialização acompanha o propósito da camada
+Staging é uma camada de transformação intermediária, não de consumo. Ela existe apenas para limpar, tipar e padronizar os dados brutos — ninguém consome o staging diretamente, nem o Looker Studio, nem analistas. Ela é um "degrau" para chegar no mart.
+Como é apenas um degrau, não faz sentido gastar dinheiro e tempo materializando ela em disco. A view é só uma query salva — ela não ocupa espaço no BigQuery e não tem custo de escrita. Quando o modelo fct_european_matches referencia stg_matches, o BigQuery simplesmente expande a view inline e executa tudo em uma única query.
+Mart é a camada de consumo final. O Looker Studio vai bater nessa tabela potencialmente várias vezes por dia, com filtros, agregações e múltiplos usuários simultâneos. Se fosse uma view, o BigQuery teria que reprocessar os 76.7k rows e 41.8 MiB a cada clique no dashboard. Como é uma table particionada e clusterizada, os dados já estão em disco, organizados — a query é muito mais rápida e barata.
+
+
+
+
+dbt Cloud 
+  1. Crie um projeto no dbt Cloud;
+  2. Utilize a conta de serviço recém criada para fazer a conexão com o BigQuery
+  3. Estabeleça conexão com seu repositório e aponte para pasta 'dbt'
+  4. No terminal do dbt execute o comando abaixo para instalar as dependencias
+    dbt deps
+  5. Criar o Environment de Produção
+    1. Acesse Orchestration >> Environments
+    2. + Create environment
+      Environment settings
+        - Environment name: Production
+        - Environment type: Deployment
+        - Set deployment type: Production
+        - dbt version: Latest
+
+      Connection profiles
+        + Assign profile
+        - Save
+
+        + Assign profile
+
+        Save
+
+  6. Criar o Environment Variables
+    1. Acesse Orchestration >> Environments
+      - Aba Environment variables
+    2. + Add variable
+    3. Key: DBT_BIGQUERY_PROJECT
+    4. Project default: <GCP_PROJECT_ID>
+    5. Save
+
+  7. Criar o Jobs
+    1. Acesse Orchestration >> Jobs
+      + Create job > Deploy job
+        Job settings
+          Job name: football_pipeline_production
+          Environment: previous environment created 
+      Execution settings
+        Include the commands in the order below:
+          dbt seed --select leagues
+          dbt run --select stg_matches fct_european_matches
+          dbt test --select stg_matches fct_european_matches
+      
+        Check 'Generate docs on run' to automatically update dbt Catalog documentation each time this job runs
+
+      Schedule
+        Leave the toggle 'Run on schedule' off.
+        Airflow will activate the job via API.
+
+      Save
+
+    On the upper right side, click in "API trigger" and copy the values of:
+      - Account ID
+      - Job ID
+    
+    Leverage the open pop-up and click in "You can find your API key on your profile page."
+
+-------------------------------------------------------
+
+10. Faça o upload da DAG e das tasks para o Composer (talvez caiba um bash aqui)
+
+gcloud composer environments storage dags import \
+    --environment $COMPOSER_ENV_NAME \
+    --location us-east1 \
+    --source dags/football_pipeline_dag.py
+
+gcloud composer environments storage dags import \
+    --environment $COMPOSER_ENV_NAME \
+    --location us-east1 \
+    --source dags/scripts/
+
+  10.1. Sete as variáveis do Kaggle no ambiente
+
+gcloud composer environments run $COMPOSER_ENV_NAME \
+	--location us-east1 \
+	variables set -- KAGGLE_USERNAME $KAGGLE_USERNAME
+
+gcloud composer environments run $COMPOSER_ENV_NAME \
+	--location us-east1 \
+	variables set -- KAGGLE_API_TOKEN $KAGGLE_API_TOKEN
+
+  10.2. Suba a biblioteca do Kaggle 
+
+gcloud composer environments update $COMPOSER_ENV_NAME \
+    --location us-east1 \
+    --update-pypi-packages-from-file requirements.txt
+
+--------------------------------------------------
+
+# Pegue o bucket do Composer
+gcloud composer environments describe eu-football-composer-env \
+  --location us-east1 \
+  --format="value(config.dagGcsPrefix)"
+
+# Faça o upload (substitua YOUR_BUCKET pelo valor retornado acima)
+gcloud storage cp -r dbt gs://us-east1-eu-football-compos-e5eb21de-bucket/dags/dbt
+
+------------------------------------------------------
+
+As linhas 92 e 93 do arquivo create_external_table.py realizam a preparação da conexão com o Google BigQuery:
+
+Linha 92 (hook = BigQueryHook()): Inicializa o Hook do BigQuery. No Airflow, um "Hook" é uma interface de alto nível que simplifica a interação com serviços externos (como o GCP), cuidando da autenticação e detalhes da conexão.
+Linha 93 (client = hook.get_client(project_id=PROJECT_ID)): Utiliza esse hook para instanciar um Cliente oficial da biblioteca do Google Cloud (bigquery.Client).
+Ao obter esse client, o script ganha a capacidade de executar operações de baixo nível no BigQuery, como criar, deletar ou modificar tabelas, usando as credenciais que o Airflow já possui.
