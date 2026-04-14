@@ -19,6 +19,10 @@ This project focuses on the **top 10 European leagues**, selected based on the [
 
 ![Opta Power Rankings](assets/20260402_OPTA_Analyst.png)
 
+<p align="center">
+  <img src="assets/20260402_OPTA_Analyst.png" alt="Opta Power Rankings">
+</p>
+
 ## 🗺️ Architecture
 
 ```

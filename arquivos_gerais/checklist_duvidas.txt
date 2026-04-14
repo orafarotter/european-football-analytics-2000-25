@@ -2,4 +2,6 @@
 > imagem da arquitetura []
 > explicação do que acontece dentro de dags []
 > 185 privelegios da conta de serviço (testar)
+> link do dashboard
+> alerta de orçamento do GCP
 > ver se tudo foi apagado do GCP quando fizer o destroy []
