@@ -41,9 +41,9 @@ This project analyzes the **top 10 European leagues**, selected based on the [Op
 ```
 
 This project follows the **Medallion / ELT** pattern:
-- **Bronze** — raw data landed in GCS and exposed via BigQuery external table
-- **Silver** — staging layer: type casting, surrogate key generation, null filtering, join with league seed
-- **Gold** — mart layer: filtered for 10 European leagues, enriched with calculated columns, partitioned by year, clustered by `division` and `league_name`
+- **Bronze**: raw data landed in GCS and exposed via BigQuery external table
+- **Silver**: staging layer: type casting, surrogate key generation, null filtering, join with league seed
+- **Gold**: mart layer: filtered for 10 European leagues, enriched with calculated columns, partitioned by year, clustered by `division` and `league_name`
 
 ## 🏗️ Tech Stack
 
@@ -100,6 +100,7 @@ european-football-analytics-2000-25/
 ## 🚀 How to Reproduce
 
 > ⚠️ The commands below were tested in a **WSL Ubuntu** environment. Any Linux terminal should work equivalently.
+
 > 💡 **Tip:** This project uses a `Makefile` to simplify execution. You can view all available commands by running `make` or `make help` in your terminal.
 
 ### Prerequisites
@@ -216,10 +217,10 @@ The DAG will appear on the home screen. Enable it using the **toggle switch**, t
 
 The DAG runs the following tasks in sequence:
 
-1. **`download_csv`** — Downloads the dataset from Kaggle using your API credentials, extracts it to `/tmp/football/` and removes any files other than `Matches.csv`.
-2. **`upload_to_gcs`** — Uploads `Matches.csv` to the GCS bucket under `raw/Matches.csv`. If the file already exists, it is overwritten (idempotent).
-3. **`create_external_table`** — Drops and recreates a BigQuery external table in `eu_football_raw` pointing to the GCS file, with an explicit schema (no auto-detect).
-4. **`run_dbt`** — Runs the full dbt project:
+1. **`download_csv`**: Downloads the dataset from Kaggle using your API credentials, extracts it to `/tmp/football/` and removes any files other than `Matches.csv`.
+2. **`upload_to_gcs`**: Uploads `Matches.csv` to the GCS bucket under `raw/Matches.csv`. If the file already exists, it is overwritten (idempotent).
+3. **`create_external_table`**: Drops and recreates a BigQuery external table in `eu_football_raw` pointing to the GCS file, with an explicit schema (no auto-detect).
+4. **`run_dbt`**: Runs the full dbt project:
    - Seeds the `leagues` reference table
    - Builds `stg_matches` (view): type casting with `SAFE_CAST`, surrogate key generation, null filtering on `MatchDate`, `HomeTeam` and `AwayTeam` and a join with the `leagues` seed to enrich records with `country`, `league_name` and `match_year`
    - Builds `fct_european_matches` (table): filtered for the 10 European leagues, partitioned by year, clustered by `division` and `league_name`, with enriched columns (`total_goals`, `goal_difference`, `match_result_label`, `goal_timing`, `scoring_category`)
@@ -275,20 +276,18 @@ make tf-destroy
 > **[Open Dashboard](https://datastudio.google.com/s/l8hPCau_FCc)**
 
 **Tiles:**
-- KPI Scorecards — Total Matches · Average Goals per Match
-- Time Series — Average Goals per Match by Year (2000–2025)
-- Horizontal Bar Chart — Total Matches by League
-- Donut Chart — Match Outcome Distribution (Home Win / Away Win / Draw)
-- 100% Stacked Bar Chart — Match Intensity Distribution by League (`scoring_category`)
+- KPI Scorecards: Total Matches · Average Goals per Match
+- Time Series: Average Goals per Match by Year (2000–2025)
+- Horizontal Bar Chart: Total Matches by League
+- Donut Chart: Match Outcome Distribution (Home Win / Away Win / Draw)
+- 100% Stacked Bar Chart: Match Intensity Distribution by League (`scoring_category`)
 
----
 
 ## 🏆 Going the Extra Mile
 
-- **Tests** — dbt tests across the models covering `not_null`, `accepted_values` and `relationships` constraints. 
-- **Make** — implementation of a Makefile to standardize environment setup, infrastructure provisioning, and pipeline execution.
+- **Tests**: dbt tests across the models covering `not_null`, `accepted_values` and `relationships` constraints. 
+- **Make**: implementation of a Makefile to standardize environment setup, infrastructure provisioning, and pipeline execution.
 
----
 
 ## 🔐 Security Notes
 
