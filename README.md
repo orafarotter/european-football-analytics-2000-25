@@ -268,6 +268,8 @@ You are now ready to build your own visualizations.
 
 > **[Open Dashboard](https://datastudio.google.com/s/rx7YHAG4x1Y)**
 
+> **Note:** The link above uses the `datastudio.google.com` domain — Google reverted the Looker Studio rebranding back to Data Studio in 2026, so the legacy domain is correct and fully functional.
+
 **Tiles:**
 - KPI Scorecards: Total Matches · Average Goals per Match
 - Time Series: Average Goals per Match by Year (2000–2025)
