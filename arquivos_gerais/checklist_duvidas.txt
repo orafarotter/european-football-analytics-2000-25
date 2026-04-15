@@ -1,3 +1,2 @@
 > imagem da arquitetura []
-> alerta de orçamento do GCP
 > ver se tudo foi apagado do GCP quando fizer o destroy []
