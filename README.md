@@ -85,13 +85,14 @@ This project follows the **Medallion / ELT** pattern:
 
 ```
 european-football-analytics-2000-25/
-├── terraform/               # GCP infrastructure (IaC)
 ├── dags/                    # Airflow DAG
-├── dbt/                     # dbt project (models, seeds, tests)
+├── dbt/                     # dbt project
+├── terraform/               # GCP infrastructure (IaC)
 ├── .env.example             # Environment variable template
 ├── .gitignore
 ├── docker-compose.yaml
 ├── Dockerfile
+├── Makefile
 ├── README.md
 ├── requirements.txt
 └── setup.sh                 # Initializes Airflow variables and GCP connection from .env
@@ -101,7 +102,7 @@ european-football-analytics-2000-25/
 
 > ⚠️ The commands below were tested in a **WSL Ubuntu** environment. Any Linux terminal should work equivalently.
 
-> 💡 **Tip:** This project uses a `Makefile` to simplify execution. You can view all available commands by running `make` or `make help` in your terminal.
+> **Tip:** This project uses a `Makefile` to simplify execution. You can view all available commands by running `make` or `make help` in your terminal.
 
 ### Prerequisites
 
@@ -286,7 +287,7 @@ make tf-destroy
 ## 🏆 Going the Extra Mile
 
 - **Tests**: dbt tests across the models covering `not_null`, `accepted_values` and `relationships` constraints. 
-- **Make**: implementation of a Makefile to standardize environment setup, infrastructure provisioning, and pipeline execution.
+- **Make**: implementation of a Makefile to standardize environment setup, infrastructure provisioning and pipeline execution.
 
 
 ## 🔐 Security Notes
