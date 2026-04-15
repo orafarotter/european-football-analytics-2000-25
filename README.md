@@ -233,38 +233,39 @@ The DAG will appear on the home screen. Enable it using the **toggle switch**, t
 
 The DAG runs the following tasks in sequence:
 
-1. **`download_csv`** — Downloads the raw CSV from Kaggle using your API credentials and saves it locally inside the container.
-2. **`upload_to_gcs`** — Uploads `matches.csv` to the GCS bucket under `raw/matches.csv`. Existing files are overwritten (idempotent).
-3. **`create_external_table`** — Creates (or replaces) a BigQuery external table in `eu_football_raw` pointing to the GCS file, with an explicit schema.
+1. **`download_csv`** — Downloads the dataset from Kaggle using your API credentials, extracts it to `/tmp/football/`, and removes any files other than `Matches.csv`.
+2. **`upload_to_gcs`** — Uploads `Matches.csv` to the GCS bucket under `raw/Matches.csv`. If the file already exists, it is overwritten (idempotent).
+3. **`create_external_table`** — Drops and recreates a BigQuery external table in `eu_football_raw` pointing to the GCS file, with an explicit schema (no auto-detect).
 4. **`run_dbt`** — Runs the full dbt project:
    - Seeds the `leagues` reference table
-   - Builds `stg_matches` (view): type casting, deduplication, join with league metadata
-   - Builds `fct_european_matches` (table): filtered for the 10 European leagues, partitioned by year, clustered by league and league name, with enriched columns (`total_goals`, `goal_difference`, `match_result_label`, `scoring_category`)
-   - Runs 21 dbt tests (not_null, accepted_values, relationships)
-
+   - Builds `stg_matches` (view): type casting with `SAFE_CAST`, surrogate key generation, null filtering on `MatchDate`, `HomeTeam` and `AwayTeam`, and a join with the `leagues` seed to enrich records with `country`, `league_name` and `match_year`
+   - Builds `fct_european_matches` (table): filtered for the 10 European leagues, partitioned by year, clustered by `division` and `league_name`, with enriched columns (`total_goals`, `goal_difference`, `match_result_label`, `goal_timing`, `scoring_category`)
+   - Runs all dbt tests
 
 <p align="center">
   <img src="assets/airflow-dag-run-details.png" alt="Airflow DAG run details">
 </p>
 
-
 Once the DAG completes successfully, verify the output in **BigQuery** → `eu_football_mart` → `fct_european_matches`.
 
+<p align="center">
+  <img src="assets/bigquery_datasets.png" alt="BigQuery datasets">
+</p>
 
 ### Step 5 — Explore the Dashboard
 
-A pre-built dashboard is available here:
-
-> 📊 **[European Football Analytics — Looker Studio](https://lookerstudio.google.com/reporting/67b7d22f-b31f-40de-9af0-f8a87ab10c17)**
+The dashboard built for this project is available [here](https://lookerstudio.google.com/reporting/67b7d22f-b31f-40de-9af0-f8a87ab10c17).
 
 To build your own dashboard connected to your data:
 
 1. Go to [https://lookerstudio.google.com](https://lookerstudio.google.com)
 2. Click **+ Create** → **Report**
 3. Connect to **BigQuery**:
-   - Project: your GCP project
-   - Dataset: `eu_football_mart`
-   - Table: `fct_european_matches`
+   - In *"Add data to report"* → **Connect to data**, select or search for **BigQuery**
+   - Choose:
+     - Project: your GCP project
+     - Dataset: `eu_football_mart`
+     - Table: `fct_european_matches`
 4. If prompted with *"You are about to add data to this Report"*, click **Add to Report**
 
 You are now ready to build your own visualizations.
@@ -289,10 +290,7 @@ terraform destroy
 
 ![Dashboard Screenshot](assets/looker_dashboard.png)
 
-
 > **[Open Dashboard](https://lookerstudio.google.com/reporting/67b7d22f-b31f-40de-9af0-f8a87ab10c17)**
->
-> *Covering the 10 strongest European leagues based on Opta Power Rankings (Apr 2, 2026)*
 
 **Tiles:**
 - 🔢 KPI Scorecards — Total Matches · Average Goals per Match
@@ -305,8 +303,7 @@ terraform destroy
 
 ## ⭐ Going the Extra Mile
 
-- **dbt tests** — tests across all models covering `not_null`, `accepted_values`, and `relationships` constraints. All tests pass ✅
-- **Partitioning & Clustering** — `fct_european_matches` is partitioned by year (`DATE_TRUNC(match_date, YEAR)`) and clustered by `division` and `league_name` for optimal query performance and cost efficiency in BigQuery
+- **dbt tests** — tests across the models covering `not_null`, `accepted_values`, and `relationships` constraints. All tests pass ✅
 
 ---
 
