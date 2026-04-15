@@ -2,7 +2,7 @@
 
 An end-to-end **batch ELT data pipeline** built on Google Cloud Platform (GCP), using a single public Kaggle dataset to answer analytical questions about the top 10 European football leagues — from raw data to an interactive Looker Studio dashboard.
 
-> 📊 **[View the Live Dashboard](https://lookerstudio.google.com/reporting/67b7d22f-b31f-40de-9af0-f8a87ab10c17)**
+> 📊 **[View the Live Dashboard](https://datastudio.google.com/s/l8hPCau_FCc)**
 
 ## 📌 Problem Description
 
@@ -254,7 +254,7 @@ Once the DAG completes successfully, verify the output in **BigQuery** → `eu_f
 
 ### Step 5 — Explore the Dashboard
 
-The dashboard built for this project is available [here](https://lookerstudio.google.com/reporting/67b7d22f-b31f-40de-9af0-f8a87ab10c17).
+The dashboard built for this project is available [here](https://datastudio.google.com/s/l8hPCau_FCc).
 
 To build your own dashboard connected to your data:
 
@@ -290,14 +290,14 @@ terraform destroy
 
 ![Dashboard Screenshot](assets/looker_dashboard.png)
 
-> **[Open Dashboard](https://lookerstudio.google.com/reporting/67b7d22f-b31f-40de-9af0-f8a87ab10c17)**
+> **[Open Dashboard](https://datastudio.google.com/s/l8hPCau_FCc)**
 
 **Tiles:**
-- 🔢 KPI Scorecards — Total Matches · Average Goals per Match
-- 📈 Line Chart — Average Goals per Match by Year (2000–2025)
-- 📊 Bar Chart — Total Matches by League
-- 🍩 Donut Chart — Match Result Distribution (Home Win / Away Win / Draw)
-- 📊 Stacked Bar Chart — Match Intensity by League (`scoring_category`)
+- KPI Scorecards — Total Matches · Average Goals per Match
+- Line Chart — Average Goals per Match by Year (2000–2025)
+- Bar Chart — Total Matches by League
+- Donut Chart — Match Result Distribution (Home Win / Away Win / Draw)
+- Stacked Bar Chart — Match Intensity by League (`scoring_category`)
 
 ---
 
