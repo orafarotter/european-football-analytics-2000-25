@@ -276,10 +276,18 @@ You are now ready to build your own visualizations.
 
 ### Teardown
 
-To stop and remove all containers:
+For Docker, there are two options:
+
+1. Stop containers preserving Airflow history and metadata:
 
 ```bash
 make down
+```
+
+2. Stop containers and destroy volumes (erasing all Airflow data):
+
+```bash
+make clean
 ```
 
 To destroy all GCP infrastructure provisioned by Terraform:

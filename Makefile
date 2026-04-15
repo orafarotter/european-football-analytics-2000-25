@@ -32,3 +32,7 @@ up: ## Run the full Airflow pipeline: build, init, up, and setup.sh
 
 down: ## Stop and remove all containers managed by Docker Compose
 	docker compose down
+
+clean: ## Stop containers and DESTROY volumes (Resets all Airflow metadata/history)
+	docker compose down -v
+	@echo "Volumes destroyed! Airflow is completely reset."
