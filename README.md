@@ -160,7 +160,7 @@ service_account_name = "<SERVICE_ACCOUNT_NAME>"
 ```
 
 > ⚠️ `project_id`, `region` and `bucket_name` must match the values set in `.env`.
-> The `service_account_name` must match the regex: `^[a-z]([-a-z0-9]*[a-z0-9])?$`
+> The `service_account_name` must be between 6 and 30 characters long and match the regex: `^[a-z]([-a-z0-9]*[a-z0-9])?$`
 
 
 ### Step 2 — Authenticate with GCP & Provision Infrastructure
@@ -175,7 +175,11 @@ If you have multiple projects, confirm you are using the correct one:
 
 ```bash
 gcloud config get-value project
-# If incorrect:
+```
+
+If incorrect:
+
+```bash
 gcloud config set project <GCP_PROJECT_ID>
 ```
 
@@ -256,6 +260,20 @@ To build your own dashboard connected to your data:
 You are now ready to build your own visualizations.
 
 
+## 📊 Dashboard Preview
+
+![Dashboard Screenshot](assets/looker_dashboard.png)
+
+> **[Open Dashboard](https://datastudio.google.com/s/l8hPCau_FCc)**
+
+**Tiles:**
+- KPI Scorecards: Total Matches · Average Goals per Match
+- Time Series: Average Goals per Match by Year (2000–2025)
+- Horizontal Bar Chart: Total Matches by League
+- Donut Chart: Match Outcome Distribution (Home Win / Away Win / Draw)
+- 100% Stacked Bar Chart: Match Intensity Distribution by League (`scoring_category`)
+
+
 ### Teardown
 
 To stop and remove all containers:
@@ -270,19 +288,7 @@ To destroy all GCP infrastructure provisioned by Terraform:
 make tf-destroy
 ```
 
-## 📊 Dashboard Preview
-
-![Dashboard Screenshot](assets/looker_dashboard.png)
-
-> **[Open Dashboard](https://datastudio.google.com/s/l8hPCau_FCc)**
-
-**Tiles:**
-- KPI Scorecards: Total Matches · Average Goals per Match
-- Time Series: Average Goals per Match by Year (2000–2025)
-- Horizontal Bar Chart: Total Matches by League
-- Donut Chart: Match Outcome Distribution (Home Win / Away Win / Draw)
-- 100% Stacked Bar Chart: Match Intensity Distribution by League (`scoring_category`)
-
+---
 
 ## 🏆 Going the Extra Mile
 

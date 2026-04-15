@@ -1,4 +1,5 @@
 > imagem da arquitetura []
 > preencher o about do github []
-> apagar projeto teste
 > link do DASHBOARD README
+> subir o dashboard
+> apagar a pasta arquivos_gerais
