@@ -133,7 +133,7 @@ cd european-football-analytics-2000-25
 Copy the environment variable template and fill in your values:
 
 ```bash
-mv .env.example .env
+cp .env.example .env
 ```
 
 Edit `.env` with your values:
@@ -153,7 +153,7 @@ Edit `.env` with your values:
 
 ```bash
 cd terraform
-mv terraform.tfvars.example terraform.tfvars
+cp terraform.tfvars.example terraform.tfvars
 ```
 
 Edit `terraform.tfvars` with your values:
