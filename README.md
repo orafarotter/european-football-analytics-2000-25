@@ -241,9 +241,12 @@ Once the DAG completes successfully, verify the output in **BigQuery** → `eu_f
   <img src="assets/bigquery_datasets.png" alt="BigQuery datasets">
 </p>
 
-### Step 5 — Explore the Dashboard
+### Step 4 — Explore the Dashboard
 
-The dashboard built for this project is available [here](https://datastudio.google.com/s/l8hPCau_FCc).
+The dashboard built for this project is available [here](https://datastudio.google.com/s/rx7YHAG4x1Y).
+
+> **Note:** The link above uses the `datastudio.google.com` domain — Google reverted the Looker Studio  
+> rebranding back to Data Studio in 2026, so the legacy domain is correct and fully functional.
 
 To build your own dashboard connected to your data:
 
@@ -264,7 +267,7 @@ You are now ready to build your own visualizations.
 
 ![Dashboard Screenshot](assets/looker_dashboard.png)
 
-> **[Open Dashboard](https://datastudio.google.com/s/l8hPCau_FCc)**
+> **[Open Dashboard](https://datastudio.google.com/s/rx7YHAG4x1Y)**
 
 **Tiles:**
 - KPI Scorecards: Total Matches · Average Goals per Match

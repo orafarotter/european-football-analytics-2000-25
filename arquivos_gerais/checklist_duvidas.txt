@@ -1,5 +1,3 @@
 > imagem da arquitetura []
 > preencher o about do github []
-> link do DASHBOARD README
-> subir o dashboard
-> apagar a pasta arquivos_gerais
+> parar de rastrear e apagar a pasta arquivos_gerais
