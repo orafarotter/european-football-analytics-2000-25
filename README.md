@@ -8,7 +8,7 @@ An end-to-end **batch ELT data pipeline** built on Google Cloud Platform (GCP), 
 
 The dataset contains football match data from more than 30 leagues worldwide, spanning from the 2000/01 season through the most recent results of the 2024/25 season.
 
-This project focuses on the **top 10 European leagues**, selected based on the [Opta Power Rankings (Apr 2, 2026)](https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-power-rankings), and addresses the following analytical questions:
+This project analyzes the **top 10 European leagues**, selected based on the [Opta Power Rankings](https://theanalyst.com/articles/strongest-football-leagues-in-the-world-opta-power-rankings) as of April 2, 2026, addressing the following analytical questions:
 
 - What is the total number of matches analyzed across all leagues and years?
 - What is the overall average number of goals per match?
@@ -27,7 +27,7 @@ This project focuses on the **top 10 European leagues**, selected based on the [
 [Kaggle API]
      │
      ▼  Python (Airflow DAG)
-[Cloud Storage — GCS: raw/matches.csv]
+[Cloud Storage — GCS: raw/Matches.csv]
      │
      ▼  BigQuery External Table (Airflow DAG)
 [BigQuery — eu_football_raw]         ← Bronze
@@ -294,10 +294,10 @@ terraform destroy
 
 **Tiles:**
 - KPI Scorecards — Total Matches · Average Goals per Match
-- Line Chart — Average Goals per Match by Year (2000–2025)
-- Bar Chart — Total Matches by League
-- Donut Chart — Match Result Distribution (Home Win / Away Win / Draw)
-- Stacked Bar Chart — Match Intensity by League (`scoring_category`)
+- Time Series — Average Goals per Match by Year (2000–2025)
+- Horizontal Bar Chart — Total Matches by League
+- Donut Chart — Match Outcome Distribution (Home Win / Away Win / Draw)
+- 100% Stacked Bar Chart — Match Intensity Distribution by League (`scoring_category`)
 
 ---
 
