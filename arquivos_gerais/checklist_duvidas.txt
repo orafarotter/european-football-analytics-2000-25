@@ -1,2 +1,2 @@
 > imagem da arquitetura []
-> ver se tudo foi apagado do GCP quando fizer o destroy []
+> preencher o about do github []
