@@ -1,6 +1,6 @@
 # European Football Analytics 2000–2025
 
-An end-to-end **batch ELT data pipeline** built on Google Cloud Platform (GCP), using a single public Kaggle dataset to answer analytical questions about the top 10 European football leagues — from raw data to an interactive Looker Studio dashboard.
+An end-to-end **batch ELT data pipeline** built on Google Cloud Platform (GCP), using a single public Kaggle dataset to answer analytical questions about the top 10 European football leagues — from raw data to an interactive Data Studio dashboard.
 
 ## 📌 Problem Description
 
@@ -37,7 +37,7 @@ This project analyzes the **top 10 European leagues**, selected based on the [Op
 [BigQuery — eu_football_mart]        ← Gold
      │
      ▼
-[Looker Studio]
+[Data Studio]
 ```
 
 This project follows the **Medallion / ELT** pattern:
@@ -55,7 +55,7 @@ This project follows the **Medallion / ELT** pattern:
 | Data Lake                     | Google Cloud Storage (GCS)        |
 | Data Warehouse                | BigQuery                          |
 | Transformations               | dbt Core                          |
-| Dashboard                     | Looker Studio                     |
+| Dashboard                     | Data Studio                       |
 
 ## 📦 Dataset
 
@@ -250,7 +250,7 @@ The dashboard built for this project is available [here](https://datastudio.goog
 
 To build your own dashboard connected to your data:
 
-1. Go to [https://lookerstudio.google.com](https://lookerstudio.google.com)
+1. Go to [https://datastudio.google.com/](https://datastudio.google.com/)
 2. Click **+ Create** → **Report**
 3. Connect to **BigQuery**:
    - In *"Add data to report"* → **Connect to data**, select or search for **BigQuery**
@@ -265,7 +265,7 @@ You are now ready to build your own visualizations.
 
 ## 📊 Dashboard Preview
 
-![Dashboard Screenshot](assets/looker_dashboard.png)
+![Dashboard Screenshot](assets/data_studio_dashboard.png)
 
 > **[Open Dashboard](https://datastudio.google.com/s/rx7YHAG4x1Y)**
 
