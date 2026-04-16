@@ -265,7 +265,9 @@ You are now ready to build your own visualizations.
 
 ## 📊 Dashboard Preview
 
-![Dashboard Screenshot](assets/data_studio_dashboard.png)
+<p align="center">
+  <img src="assets/datastudio_dashboard.png" alt="Dashboard Screenshot">
+</p>
 
 > **[Open Dashboard](https://datastudio.google.com/s/rx7YHAG4x1Y)**
 
