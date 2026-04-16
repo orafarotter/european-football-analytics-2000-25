@@ -1,2 +1,0 @@
-> imagem da arquitetura []
-> parar de rastrear e apagar a pasta arquivos_gerais
