@@ -88,4 +88,4 @@ with_league_info as (
 
 )
 
-select * from with_league_info
+select * from with_league_info 
