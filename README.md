@@ -85,6 +85,7 @@ This project follows the **Medallion / ELT** pattern:
 
 ```
 european-football-analytics-2000-25/
+├── assets/
 ├── dags/                    # Airflow DAG
 ├── dbt/                     # dbt project
 ├── terraform/               # GCP infrastructure (IaC)
