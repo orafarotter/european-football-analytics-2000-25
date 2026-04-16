@@ -1,3 +1,2 @@
 > imagem da arquitetura []
-> preencher o about do github []
 > parar de rastrear e apagar a pasta arquivos_gerais

@@ -92,6 +92,7 @@ european-football-analytics-2000-25/
 ├── .gitignore
 ├── docker-compose.yaml
 ├── Dockerfile
+├── LICENSE
 ├── Makefile
 ├── README.md
 ├── requirements.txt
@@ -228,7 +229,7 @@ The DAG runs the following tasks in sequence:
 4. **`run_dbt`**: Runs the full dbt project:
    - Seeds the `leagues` reference table
    - Builds `stg_matches` (view): type casting with `SAFE_CAST`, surrogate key generation, null filtering on `MatchDate`, `HomeTeam` and `AwayTeam` and a join with the `leagues` seed to enrich records with `country`, `league_name` and `match_year`
-   - Builds `fct_european_matches` (table): filtered for the 10 European leagues, partitioned by year, clustered by `division` and `league_name`, with enriched columns (`total_goals`, `goal_difference`, `match_result_label`, `goal_timing`, `scoring_category`)
+   - Builds `fct_european_matches` (table): filtered for the 10 European leagues, currently covering ~76,700 matches from 2000/01 through 2024/25, partitioned by year and clustered by `division` and `league_name`, with enriched columns (`total_goals`, `goal_difference`, `match_result_label`, `goal_timing`, `scoring_category`).
    - Runs all dbt tests
 
 <p align="center">
@@ -314,3 +315,8 @@ make tf-destroy
 - `.gitignore` excludes `*.json`, `*.tfvars` and `.env`
 - Use `terraform.tfvars.example` and `.env.example` as safe templates for collaborators
 - Airflow credentials are injected via Variables (no hardcoding in DAG files)
+
+
+## 📄 License
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
