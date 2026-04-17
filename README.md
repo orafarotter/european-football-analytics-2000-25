@@ -15,11 +15,12 @@ This project analyzes the **top 10 European leagues**, selected based on the [Op
 - How are match results distributed (Home Win / Away Win / Draw)?
 - Which leagues produce the most high-scoring matches?
 
-<p align="center">
-  <img src="assets/20260402_OPTA_Analyst.png" alt="Opta Power Rankings">
-</p>
 
 ## 🗺️ Architecture
+
+<p align="center">
+  <img src="assets/pipeline_architecture.png" alt="Pipeline Architecture">
+</p>
 
 ```
 [Kaggle API]
@@ -68,6 +69,10 @@ This project follows the **Medallion / ELT** pattern:
 
 ### Leagues Selected
 
+<p align="center">
+  <img src="assets/20260402_OPTA_Analyst.png" alt="Opta Power Rankings">
+</p>
+
 | Code | Country  | League            |
 |------|----------|-------------------|
 | E0   | England  | Premier League    |
@@ -80,6 +85,7 @@ This project follows the **Medallion / ELT** pattern:
 | E1   | England  | Championship      |
 | DEN  | Denmark  | Superliga         |
 | POL  | Poland   | Ekstraklasa       |
+
 
 ## 📁 Repository Structure
 
