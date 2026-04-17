@@ -16,7 +16,7 @@ This project analyzes the **top 10 European leagues**, selected based on the [Op
 - Which leagues produce the most high-scoring matches?
 
 <p align="center">
-  <img src="assets/20260402_OPTA_Analyst.png" alt="Opta Power Rankings">
+  <img src="assets/20260402_OPTA_Analyst.png" alt="Opta Power Rankings" width="600">
 </p>
 
 ## 🗺️ Architecture
