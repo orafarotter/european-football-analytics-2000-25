@@ -15,6 +15,9 @@ This project analyzes the **top 10 European leagues**, selected based on the [Op
 - How are match results distributed (Home Win / Away Win / Draw)?
 - Which leagues produce the most high-scoring matches?
 
+<p align="center">
+  <img src="assets/20260402_OPTA_Analyst.png" alt="Opta Power Rankings">
+</p>
 
 ## 🗺️ Architecture
 
@@ -68,10 +71,6 @@ This project follows the **Medallion / ELT** pattern:
 > **Note:** This project uses only the main CSV file from the dataset.
 
 ### Leagues Selected
-
-<p align="center">
-  <img src="assets/20260402_OPTA_Analyst.png" alt="Opta Power Rankings">
-</p>
 
 | Code | Country  | League            |
 |------|----------|-------------------|
