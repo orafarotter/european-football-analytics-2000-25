@@ -170,8 +170,10 @@ service_account_name = "<SERVICE_ACCOUNT_NAME>"
 ```
 
 > [!WARNING]
-> `project_id`, `region` and `bucket_name` must match the values set in `.env`.
-> The `service_account_name` must be between 6 and 30 characters long and match the regex: `^[a-z]([-a-z0-9]*[a-z0-9])?$`
+> - `project_id`, `region` and `bucket_name` must match the values set in `.env`
+> - `service_account_name` must:
+>   - be between 6 and 30 characters
+>   - match the regex: `^[a-z]([-a-z0-9]*[a-z0-9])?$`
 
 
 ### Step 2 — Authenticate with GCP & Provision Infrastructure
