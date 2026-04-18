@@ -289,8 +289,8 @@ You are now ready to build your own visualizations.
 
 **Tiles:**
 - KPI Scorecards: Total Matches · Average Goals per Match
-- Time Series: Average Goals per Match by Year (2000–2025)
 - Horizontal Bar Chart: Total Matches by League
+- Time Series: Average Goals per Match by Year (2000–2025)
 - Donut Chart: Match Outcome Distribution (Home Win / Away Win / Draw)
 - 100% Stacked Bar Chart: Match Intensity Distribution by League (`scoring_category`)
 
