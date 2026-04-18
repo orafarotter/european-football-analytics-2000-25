@@ -68,7 +68,8 @@ This project follows the **Medallion / ELT** pattern:
 - **Coverage:** 30+ leagues worldwide, seasons 2000/01 through 2024/25
 - **Used in this analysis:** 10 European leagues (see below)
 
-> **Note:** This project uses only the main CSV file from the dataset.
+> [!NOTE]
+> This project uses only the main CSV file from the dataset.
 
 ### Leagues Selected
 
@@ -107,9 +108,11 @@ european-football-analytics-2000-25/
 
 ## 🚀 How to Reproduce
 
-> ⚠️ The commands below were tested in a **WSL Ubuntu** environment. Any Linux terminal should work equivalently.
+> [!IMPORTANT] 
+> The commands below were tested in a **WSL Ubuntu** environment. Any Linux terminal should work equivalently.
 
-> **Tip:** This project uses a `Makefile` to simplify execution. You can view all available commands by running `make` or `make help` in your terminal.
+> [!TIP]
+> This project uses a `Makefile` to simplify execution. You can view all available commands by running `make` or `make help` in your terminal.
 
 ### Prerequisites
 
@@ -166,7 +169,8 @@ bucket_name          = "<BUCKET_NAME>"
 service_account_name = "<SERVICE_ACCOUNT_NAME>"
 ```
 
-> ⚠️ `project_id`, `region` and `bucket_name` must match the values set in `.env`.
+> [!WARNING]
+> `project_id`, `region` and `bucket_name` must match the values set in `.env`.
 > The `service_account_name` must be between 6 and 30 characters long and match the regex: `^[a-z]([-a-z0-9]*[a-z0-9])?$`
 
 
@@ -252,7 +256,8 @@ Once the DAG completes successfully, verify the output in **BigQuery** → `eu_f
 
 The dashboard built for this project is available [here](https://datastudio.google.com/s/rx7YHAG4x1Y).
 
-> **Note:** The link above uses the `datastudio.google.com` domain — Google reverted the Looker Studio rebranding back to Data Studio in 2026, so the legacy domain is correct and fully functional.
+> [!NOTE]
+> The link above uses the `datastudio.google.com` domain — Google reverted the Looker Studio rebranding back to Data Studio in 2026, so the legacy domain is correct and fully functional.
 
 To build your own dashboard connected to your data:
 
@@ -277,7 +282,8 @@ You are now ready to build your own visualizations.
 
 > **[Open Dashboard](https://datastudio.google.com/s/rx7YHAG4x1Y)**
 
-> **Note:** The link above uses the `datastudio.google.com` domain — Google reverted the Looker Studio rebranding back to Data Studio in 2026, so the legacy domain is correct and fully functional.
+> [!NOTE]
+> The link above uses the `datastudio.google.com` domain — Google reverted the Looker Studio rebranding back to Data Studio in 2026, so the legacy domain is correct and fully functional.
 
 **Tiles:**
 - KPI Scorecards: Total Matches · Average Goals per Match
